@@ -17,10 +17,15 @@ import Wishlist from "./pages/Wishlist";
 
 function AppContent() {
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-primary/20 selection:text-primary">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-primary/20 selection:text-primary relative">
+      {/* Dynamic Ambient Glowing Orbs for True Glassmorphism Refraction */}
+      <div className="ambient-glow-1" />
+      <div className="ambient-glow-2" />
+      <div className="ambient-glow-3" />
+
       <ScrollToTop />
       <Navbar />
-      <div className="flex-grow">
+      <div className="flex-grow relative z-10">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<SearchResults />} />

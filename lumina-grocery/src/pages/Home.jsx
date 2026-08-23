@@ -59,7 +59,7 @@ export default function Home() {
   }, [activeCategory, searchFilter]);
 
   return (
-    <main className="pt-[80px] md:pt-[100px] pb-xl max-w-container-max mx-auto px-margin-mobile md:px-gutter">
+    <main className="pt-6 md:pt-8 pb-xl max-w-container-max mx-auto px-margin-mobile md:px-gutter">
       {/* 1. Hero Section */}
       <section className="relative min-h-[540px] md:min-h-[600px] flex flex-col items-center justify-center rounded-3xl overflow-hidden mb-12 ambient-shadow border border-white/80">
         <div
@@ -68,36 +68,49 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/45" />
 
-        <div className="relative z-10 w-full max-w-3xl px-4 text-center">
-          <div className="glass-modal p-8 md:p-12 rounded-3xl flex flex-col items-center text-center border border-white/90 shadow-2xl">
-            <span className="font-label text-xs uppercase tracking-widest text-primary font-bold mb-3 bg-white/80 px-4 py-1.5 rounded-full border border-white/80 shadow-sm flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-sm">auto_awesome</span>
-              <span>Next-Gen Voice-Activated Shopping</span>
+        <div className="relative z-10 w-full max-w-2xl px-4 text-center">
+          <div className="bg-white/15 backdrop-blur-2xl px-6 py-8 sm:py-10 md:px-10 rounded-3xl flex flex-col items-center text-center border border-white/40 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] relative overflow-hidden animate-hero-glow group">
+            {/* 1. Animated Holographic Light Sweep Sheen */}
+            <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-shine-sweep -z-0" />
+
+            {/* 2. Stylus Minimalist Badge */}
+            <span className="font-label text-[11px] uppercase tracking-[0.25em] text-amber-200 font-semibold mb-3.5 bg-black/40 backdrop-blur-md px-4 py-1 rounded-full border border-white/25 shadow-xs flex items-center gap-2 relative z-10 animate-float-mini">
+              <span className="material-symbols-outlined text-xs text-amber-300 animate-spin-slow">auto_awesome</span>
+              <span>Voice-Activated Sanctuary</span>
             </span>
 
-            <h1 className="font-headline text-3xl md:text-5xl lg:text-6xl font-bold text-on-surface mb-3 tracking-tight">
-              Lumina Luxury Grocery
+            {/* 3. Stylus Luxury Headline */}
+            <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl text-white tracking-tight drop-shadow-xl mb-3 relative z-10">
+              Lumina <span className="font-editorial italic font-normal text-amber-200 drop-shadow-md">Luxury Grocery</span>
             </h1>
 
-            <p className="text-sm md:text-base text-stone-600 mb-6 max-w-xl leading-relaxed">
-              Order fresh heirloom harvests, seasonal specialty mangoes, artisanal bakery, and rare botanicals with natural voice commands.
+            {/* 4. Minimal, Poetic Subtitle */}
+            <p className="font-editorial italic text-sm sm:text-lg text-white/90 max-w-md mx-auto leading-relaxed drop-shadow-sm mb-6 relative z-10">
+              Heirloom farm harvests & artisanal delicacies, ordered effortlessly by voice.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3.5 w-full sm:w-auto">
+            {/* 5. Clean Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto relative z-10">
               <button
                 onClick={openVoiceModal}
-                className="bg-primary text-on-primary font-label text-sm font-semibold px-8 py-3.5 rounded-full shadow-[0_8px_20px_rgba(131,70,145,0.35)] hover:bg-opacity-95 transition-all flex items-center justify-center gap-2 pulse-glow hover:scale-105"
+                className="glass-btn-primary text-white font-label text-xs sm:text-sm font-bold px-7 py-3 rounded-full shadow-[0_10px_25px_rgba(132,61,150,0.55)] hover:bg-opacity-95 transition-all flex items-center justify-center gap-2 pulse-glow hover:scale-105 border border-white/40 group/btn"
               >
-                <span className="material-symbols-outlined text-lg">mic</span>
-                Shop with Voice AI
+                {/* Mini equalizer */}
+                <div className="flex items-center gap-0.5 h-3.5">
+                  <span className="w-0.5 bg-white rounded-full h-1.5 group-hover/btn:h-3.5 animate-pulse transition-all" />
+                  <span className="w-0.5 bg-white rounded-full h-3 group-hover/btn:h-1.5 animate-pulse transition-all delay-75" />
+                  <span className="w-0.5 bg-white rounded-full h-1 group-hover/btn:h-2.5 animate-pulse transition-all delay-150" />
+                </div>
+                <span className="material-symbols-outlined text-base">mic</span>
+                <span>Shop with Voice AI</span>
               </button>
 
               <Link
                 to="/search?q=all"
-                className="glass-btn-secondary text-primary font-label text-sm font-semibold px-8 py-3.5 rounded-full flex items-center justify-center gap-2 hover:bg-white/90 transition-all hover:scale-105"
+                className="bg-white/20 hover:bg-white/35 backdrop-blur-xl text-white font-label text-xs sm:text-sm font-bold px-7 py-3 rounded-full flex items-center justify-center gap-2 border border-white/40 transition-all hover:scale-105 shadow-md group/cat"
               >
-                <span className="material-symbols-outlined text-lg">grid_view</span>
-                Explore Catalog ({products.length} Items)
+                <span className="material-symbols-outlined text-base group-hover/cat:rotate-12 transition-transform">grid_view</span>
+                <span>Explore Catalog</span>
               </Link>
             </div>
           </div>
@@ -150,7 +163,7 @@ export default function Home() {
                     : "glass-button text-stone-700 border-white/80 hover:border-primary hover:text-primary"
                 }`}
               >
-                <span>{s.emoji}</span>
+                {s.icon && <span className="material-symbols-outlined text-sm">{s.icon}</span>}
                 <span>{s.label}</span>
               </button>
             ))}
@@ -205,8 +218,9 @@ export default function Home() {
           <div className="glass-panel p-6 rounded-3xl border border-white/80 flex flex-col justify-between bg-white/75">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full">
-                  ☀️ Summer Orchard
+                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="material-symbols-outlined text-xs">wb_sunny</span>
+                  <span>Summer Orchard</span>
                 </span>
                 <span className="text-xs text-primary font-semibold">4 Items</span>
               </div>
@@ -243,8 +257,9 @@ export default function Home() {
           <div className="glass-panel p-6 rounded-3xl border border-white/80 flex flex-col justify-between bg-white/75">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-purple-800 bg-purple-100 px-2.5 py-0.5 rounded-full">
-                  🥖 Hearth & Dairy
+                <span className="text-[11px] font-bold uppercase tracking-wider text-purple-800 bg-purple-100 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="material-symbols-outlined text-xs">bakery_dining</span>
+                  <span>Hearth & Dairy</span>
                 </span>
                 <span className="text-xs text-primary font-semibold">4 Items</span>
               </div>
@@ -281,8 +296,9 @@ export default function Home() {
           <div className="glass-panel p-6 rounded-3xl border border-white/80 flex flex-col justify-between bg-white/75">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-teal-800 bg-teal-100 px-2.5 py-0.5 rounded-full">
-                  ✨ Radiance & Beauty
+                <span className="text-[11px] font-bold uppercase tracking-wider text-teal-800 bg-teal-100 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="material-symbols-outlined text-xs">spa</span>
+                  <span>Radiance & Beauty</span>
                 </span>
                 <span className="text-xs text-primary font-semibold">4 Items</span>
               </div>

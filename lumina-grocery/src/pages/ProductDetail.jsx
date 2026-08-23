@@ -38,7 +38,7 @@ export default function ProductDetail() {
       : null;
 
   return (
-    <main className="pt-[100px] md:pt-[110px] pb-xl max-w-container-max mx-auto px-margin-mobile md:px-gutter">
+    <main className="pt-6 md:pt-8 pb-xl max-w-container-max mx-auto px-margin-mobile md:px-gutter">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs text-stone-500 mb-6">
         <Link to="/" className="hover:text-primary transition-colors">Home</Link>
@@ -76,7 +76,7 @@ export default function ProductDetail() {
               )}
               {product.season && (
                 <div className="px-3 py-1 bg-white/90 backdrop-blur-md border border-white/80 rounded-full text-xs font-bold text-stone-800 shadow-sm flex items-center gap-1">
-                  <span>{product.seasonName || `✨ ${product.season}`}</span>
+                  <span>{product.seasonName || product.season}</span>
                 </div>
               )}
               {discountPercent && (
@@ -133,9 +133,10 @@ export default function ProductDetail() {
                 {product.highlights.map((h, i) => (
                   <span
                     key={i}
-                    className="text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/60 px-2.5 py-1 rounded-lg"
+                    className="text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/60 px-2.5 py-1 rounded-lg flex items-center gap-1"
                   >
-                    ✓ {h}
+                    <span className="material-symbols-outlined text-xs text-emerald-600">check</span>
+                    <span>{h}</span>
                   </span>
                 ))}
               </div>

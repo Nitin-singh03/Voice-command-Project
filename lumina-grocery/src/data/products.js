@@ -1183,13 +1183,13 @@ export const products = [
 ];
 
 export const seasons = [
-  { id: "All", label: "All Seasons", icon: "all_inclusive", emoji: "🌿" },
-  { id: "Spring", label: "Spring Bloom", icon: "spa", emoji: "🌸", subtitle: "Fresh harvests, botanical elixirs, and blossoming vitality" },
-  { id: "Summer", label: "Summer Sunshine", icon: "sunny", emoji: "☀️", subtitle: "Sweet Alphonso mangoes, berries, and sun-kissed fruits" },
-  { id: "Autumn", label: "Autumn Harvest", icon: "eco", emoji: "🍂", subtitle: "Crisp orchard apples, figs, raw wild honey, and warm cider" },
-  { id: "Winter", label: "Winter Comforts", icon: "ac_unit", emoji: "❄️", subtitle: "Winter greens, Meyer citrus, alpine cocoa, and truffle butter" },
-  { id: "Monsoon", label: "Monsoon Vitality", icon: "water_drop", emoji: "🌧️", subtitle: "Warming spiced chais, shiitake broths, and immune adaptogens" },
-  { id: "Festive", label: "Festive Treats", icon: "celebration", emoji: "🎁", subtitle: "Swiss chocolate truffles, aged balsamic, and celebratory gifts" },
+  { id: "All", label: "All Seasons", icon: "all_inclusive", subtitle: "Year-round biodynamic produce and artisanal essentials" },
+  { id: "Spring", label: "Spring Bloom", icon: "spa", subtitle: "Fresh harvests, botanical elixirs, and blossoming vitality" },
+  { id: "Summer", label: "Summer Sunshine", icon: "wb_sunny", subtitle: "Sweet Alphonso mangoes, berries, and sun-kissed fruits" },
+  { id: "Autumn", label: "Autumn Harvest", icon: "nature", subtitle: "Crisp orchard apples, figs, raw wild honey, and warm cider" },
+  { id: "Winter", label: "Winter Comforts", icon: "ac_unit", subtitle: "Winter greens, Meyer citrus, alpine cocoa, and truffle butter" },
+  { id: "Monsoon", label: "Monsoon Vitality", icon: "water_drop", subtitle: "Warming spiced chais, shiitake broths, and immune adaptogens" },
+  { id: "Festive", label: "Festive Treats", icon: "card_giftcard", subtitle: "Swiss chocolate truffles, aged balsamic, and celebratory gifts" },
 ];
 
 export const categories = [

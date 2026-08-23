@@ -85,7 +85,7 @@ export default function SearchResults() {
   };
 
   return (
-    <main className="pt-[100px] md:pt-[110px] pb-xl px-margin-mobile md:px-gutter max-w-container-max mx-auto">
+    <main className="pt-6 md:pt-8 pb-xl px-margin-mobile md:px-gutter max-w-container-max mx-auto">
       {/* Search Header Banner */}
       <section className="glass-panel rounded-3xl p-6 md:p-8 mb-8 border border-white/85 ambient-shadow bg-white/75">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -135,13 +135,14 @@ export default function SearchResults() {
               <button
                 key={s.id}
                 onClick={() => setSelectedSeason(s.id)}
-                className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all border ${
+                className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all border flex items-center gap-1 ${
                   selectedSeason === s.id
                     ? "bg-primary text-white border-primary shadow-sm"
                     : "glass-button text-stone-600 border-white/70 hover:border-primary hover:text-primary"
                 }`}
               >
-                {s.emoji} {s.label}
+                {s.icon && <span className="material-symbols-outlined text-xs">{s.icon}</span>}
+                <span>{s.label}</span>
               </button>
             ))}
           </div>

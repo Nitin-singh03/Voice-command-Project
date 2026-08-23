@@ -70,7 +70,7 @@ export default function ProductCard({ product }) {
           {/* Seasonal Tag */}
           {product.season && product.season !== "All-Season" && (
             <span className={`px-2.5 py-0.5 bg-white/90 backdrop-blur-md border rounded-full text-[10px] font-bold tracking-wide shadow-sm flex items-center gap-1 ${seasonStyle}`}>
-              <span>{product.seasonName || `✨ ${product.season}`}</span>
+              <span>{product.seasonName || product.season}</span>
             </span>
           )}
 
@@ -157,9 +157,10 @@ export default function ProductCard({ product }) {
               {product.highlights.slice(0, 2).map((h, i) => (
                 <span
                   key={i}
-                  className="text-[10px] font-medium bg-emerald-500/10 text-emerald-800 px-2 py-0.5 rounded-md border border-emerald-200/40"
+                  className="text-[10px] font-medium bg-emerald-500/10 text-emerald-800 px-2 py-0.5 rounded-md border border-emerald-200/40 flex items-center gap-0.5"
                 >
-                  ✓ {h}
+                  <span className="material-symbols-outlined text-[11px] text-emerald-600">check</span>
+                  <span>{h}</span>
                 </span>
               ))}
             </div>

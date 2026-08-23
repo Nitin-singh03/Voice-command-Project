@@ -78,7 +78,7 @@ export default function Cart() {
 
   if (orderConfirmed) {
     return (
-      <main className="pt-[100px] md:pt-[120px] pb-xl px-margin-mobile md:px-gutter max-w-3xl mx-auto">
+      <main className="pt-6 md:pt-8 pb-xl px-margin-mobile md:px-gutter max-w-3xl mx-auto">
         <div className="glass-modal rounded-3xl p-8 md:p-12 text-center ambient-shadow border border-white/90 relative overflow-hidden">
           <div className="w-20 h-20 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto mb-6 ring-8 ring-emerald-500/5">
             <span className="material-symbols-outlined text-4xl">verified</span>
@@ -166,7 +166,7 @@ export default function Cart() {
 
   if (cart.length === 0) {
     return (
-      <main className="pt-[100px] md:pt-[120px] pb-xl px-margin-mobile md:px-gutter max-w-container-max mx-auto text-center">
+      <main className="pt-6 md:pt-8 pb-xl px-margin-mobile md:px-gutter max-w-container-max mx-auto text-center">
         <div className="glass-panel max-w-lg mx-auto p-8 md:p-12 rounded-3xl ambient-shadow border border-white/70">
           <div className="w-20 h-20 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-6">
             <span className="material-symbols-outlined text-4xl">shopping_basket</span>
@@ -198,7 +198,7 @@ export default function Cart() {
   }
 
   return (
-    <main className="pt-[100px] md:pt-[110px] pb-xl px-margin-mobile md:px-gutter max-w-container-max mx-auto">
+    <main className="pt-6 md:pt-8 pb-xl px-margin-mobile md:px-gutter max-w-container-max mx-auto">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>

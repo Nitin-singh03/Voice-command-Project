@@ -45,7 +45,7 @@ const NUMBER_WORDS = {
 
 export function VoiceProvider({ children }) {
   const navigate = useNavigate();
-  const { addToCart, removeFromCart, clearCart, applyCoupon, cartCount, showToast } = useCart();
+  const { cart, addToCart, removeFromCart, clearCart, applyCoupon, cartCount, showToast } = useCart();
 
   const [voiceOverlayOpen, setVoiceOverlayOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -154,6 +154,34 @@ export function VoiceProvider({ children }) {
     setTranscript(rawCommand);
 
     const activeTable = INTENT_TABLE[lang] || INTENT_TABLE["en-US"];
+
+    // 0. Check for "running low" / reorder / shopping history recommendations
+    if (
+      lower.includes("running low") ||
+      lower.includes("reorder") ||
+      lower.includes("what do i need") ||
+      lower.includes("recommend") ||
+      lower.includes("suggestion") ||
+      lower.includes("suggest") ||
+      lower.includes("what to buy")
+    ) {
+      const cartItemNames = (cart || []).map((i) => i.name);
+      const due = RecommendationService.computeDueForReorder(cartItemNames, 3);
+      if (due && due.length > 0) {
+        const topItem = due[0].product.name;
+        const secondItem = due[1] ? ` and ${due[1].product.name}` : "";
+        const msg = `Based on your shopping history, it looks like you're running low on ${topItem}${secondItem}. Would you like me to add them?`;
+        setAssistantResponse(msg);
+        speakText(msg);
+        showToast(`Running low on: ${topItem}${secondItem}`, "info");
+      } else {
+        const msg = "You are stocked up on your usual staples! For this season, I recommend our Royal Alphonso Mangoes and Artisanal Sourdough Boule.";
+        setAssistantResponse(msg);
+        speakText(msg);
+      }
+      setIsProcessing(false);
+      return;
+    }
 
     // 1. Check for Coupon / Promo Code intent
     if (lower.includes("coupon") || lower.includes("promo") || lower.includes("discount") || lower.includes("lumina20")) {

@@ -13,7 +13,7 @@
   
   <!-- Minimalist Rounded Squircle Container -->
   <rect width="64" height="64" rx="18" fill="url(#luminaGrad)"/>
-  <rect width="62" height="62" x="1" y="1" rx="17" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <rect width="62" height="62" x="1" y="1" rx="17" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
 
   <!-- Minimalist Stylus "L" Monogram -->
   <path d="M22 17 H27 V41 H44 V46 H22 Z" fill="url(#goldGrad)"/>

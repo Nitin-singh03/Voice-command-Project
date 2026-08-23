@@ -11,7 +11,7 @@ export default function Wishlist() {
   };
 
   return (
-    <main className="pt-[100px] md:pt-[110px] pb-xl px-margin-mobile md:px-gutter max-w-container-max mx-auto">
+    <main className="pt-6 md:pt-8 pb-xl px-margin-mobile md:px-gutter max-w-container-max mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <nav className="flex items-center gap-2 text-xs text-on-surface-variant mb-2">
