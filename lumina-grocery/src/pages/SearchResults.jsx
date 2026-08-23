@@ -1,16 +1,25 @@
 import { useSearchParams, Link } from "react-router-dom";
-import { products, categories } from "../data/products";
+import { products, categories, seasons } from "../data/products";
 import ProductCard from "../components/ProductCard";
 import { useVoice } from "../context/VoiceContext";
 import RecommendationPanel from "../components/RecommendationPanel";
 import { useState, useMemo } from "react";
 
 const substitutesMap = {
-  apples: ["Wild Organic Blueberries", "Artisanal Sourdough Boule", "Cold-Pressed Raw Honey"],
-  fruits: ["Organic Fuji Apples", "Granny Smith Apples", "Wild Organic Blueberries"],
-  wellness: ["Lumina Essential Oils Set", "Spring Botanical Collection", "Organic Matcha Ceremony Grade"],
-  skincare: ["Aura Revitalizing Essence", "Botanical Restorative Night Balm"],
-  default: ["Honeycrisp Apples", "Organic Matcha Ceremony Grade", "Artisanal Sourdough Boule", "Eco-Friendly Zero Waste Bundle"],
+  apples: ["Granny Smith Apples", "Golden Spiced Apple & Pear Cider", "Cold-Pressed Raw Honey", "Wild Organic Blueberries"],
+  mango: ["Royal Alphonso Mangoes", "Rainier Sweet Golden Cherries", "Wild Organic Blueberries"],
+  fruits: ["Royal Alphonso Mangoes", "Honeycrisp Apples", "Rainier Sweet Golden Cherries", "Wild Organic Blueberries"],
+  bread: ["Artisanal Sourdough Boule", "French Pure Butter Croissants", "Rosemary Sea Salt Focaccia"],
+  dairy: ["French Black Truffle Cultured Butter", "Authentic Greek Sheep Milk Yogurt", "Pasture-Raised Heirloom Eggs"],
+  cheese: ["Artisanal Aged Farmhouse Cheese", "French Black Truffle Cultured Butter"],
+  tea: ["Organic Matcha Ceremony Grade", "Monsoon Herbal Spiced Chai Blend", "Wild Lavender Herbal Sparkling Tonic"],
+  coffee: ["Cold Brew Single-Origin Coffee", "Oat Milk Barista Edition"],
+  wellness: ["Lumina Essential Oils Set", "Spring Botanical Collection", "Organic Wild Lion's Mane Extract"],
+  skincare: ["Aura Revitalizing Essence", "Botanical Restorative Night Balm", "Damask Rose Hydrating Face Mist"],
+  summer: ["Royal Alphonso Mangoes", "Rainier Sweet Golden Cherries", "Cold Brew Single-Origin Coffee", "Damask Rose Hydrating Face Mist"],
+  winter: ["French Black Truffle Cultured Butter", "Winter Alpine Dark Hot Cocoa Blend", "Wildcrafted Elderberry & Zinc Tonic", "Meyer Lemons"],
+  monsoon: ["Monsoon Herbal Spiced Chai Blend", "Japanese Shiitake Mushrooms", "Organic Wild Lion's Mane Extract"],
+  default: ["Honeycrisp Apples", "Royal Alphonso Mangoes", "French Black Truffle Cultured Butter", "Organic Matcha Ceremony Grade", "Aura Revitalizing Essence"],
 };
 
 export default function SearchResults() {
@@ -20,6 +29,7 @@ export default function SearchResults() {
 
   const { openVoiceModal } = useVoice();
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedSeason, setSelectedSeason] = useState("All");
   const [sortBy, setSortBy] = useState("relevance");
   const [maxPrice, setMaxPrice] = useState(maxPriceParam ? parseFloat(maxPriceParam) : 150);
 
@@ -38,17 +48,27 @@ export default function SearchResults() {
 
     if (rawQuery && rawQuery.toLowerCase() !== "all") {
       const q = rawQuery.toLowerCase();
-      list = list.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.category.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q) ||
-          (p.badge && p.badge.toLowerCase().includes(q))
-      );
+      if (q === "seasonal") {
+        list = list.filter((p) => p.isSeasonal);
+      } else {
+        list = list.filter(
+          (p) =>
+            p.name.toLowerCase().includes(q) ||
+            p.category.toLowerCase().includes(q) ||
+            p.description.toLowerCase().includes(q) ||
+            (p.season && p.season.toLowerCase().includes(q)) ||
+            (p.badge && p.badge.toLowerCase().includes(q)) ||
+            (p.tags && p.tags.some((t) => t.toLowerCase().includes(q)))
+        );
+      }
     }
 
     if (selectedCategory !== "All") {
       list = list.filter((p) => p.category.toLowerCase() === selectedCategory.toLowerCase());
+    }
+
+    if (selectedSeason !== "All") {
+      list = list.filter((p) => p.season === selectedSeason);
     }
 
     list = list.filter((p) => p.price <= maxPrice);
@@ -58,7 +78,7 @@ export default function SearchResults() {
     if (sortBy === "rating") list = [...list].sort((a, b) => (b.rating || 0) - (a.rating || 0));
 
     return list;
-  }, [rawQuery, selectedCategory, maxPrice, sortBy]);
+  }, [rawQuery, selectedCategory, selectedSeason, maxPrice, sortBy]);
 
   const handleSubstituteClick = (sub) => {
     setSearchParams({ q: sub });
@@ -67,13 +87,13 @@ export default function SearchResults() {
   return (
     <main className="pt-[100px] md:pt-[110px] pb-xl px-margin-mobile md:px-gutter max-w-container-max mx-auto">
       {/* Search Header Banner */}
-      <section className="glass-panel rounded-3xl p-6 md:p-8 mb-8 border border-white/80 ambient-shadow">
+      <section className="glass-panel rounded-3xl p-6 md:p-8 mb-8 border border-white/85 ambient-shadow bg-white/75">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs text-on-surface-variant mb-1">
+            <div className="flex items-center gap-2 text-xs text-stone-500 mb-1">
               <Link to="/" className="hover:text-primary transition-colors">Home</Link>
               <span>/</span>
-              <span className="text-on-surface font-medium">Search</span>
+              <span className="text-on-surface font-medium">Search Catalog</span>
             </div>
             <h1 className="font-headline text-2xl md:text-3xl font-bold text-on-surface flex items-center gap-3">
               Results for <span className="text-primary">"{displayQuery}"</span>
@@ -83,11 +103,11 @@ export default function SearchResults() {
             </h1>
           </div>
 
-          {/* Voice Search CTA */}
+          {/* Voice Search CTA & Sort Selector */}
           <div className="flex items-center gap-3 w-full md:w-auto">
             <button
               onClick={openVoiceModal}
-              className="glass-button text-primary font-label text-xs font-semibold px-4 py-2.5 rounded-full flex items-center gap-2 hover:bg-primary hover:text-white transition-all shadow-sm"
+              className="glass-button text-primary font-label text-xs font-bold px-4 py-2.5 rounded-full flex items-center gap-2 hover:bg-primary hover:text-white transition-all shadow-sm"
             >
               <span className="material-symbols-outlined text-base">mic</span>
               Voice Search
@@ -96,7 +116,7 @@ export default function SearchResults() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="glass-input text-xs py-2 px-3 rounded-full cursor-pointer w-auto"
+              className="glass-input text-xs py-2 px-3 rounded-full cursor-pointer w-auto bg-white/70"
             >
               <option value="relevance">Sort: Relevance</option>
               <option value="price-asc">Price: Low to High</option>
@@ -106,54 +126,75 @@ export default function SearchResults() {
           </div>
         </div>
 
-        {/* Category & Price Filter Bar */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mt-6 pt-6 border-t border-white/40">
-          {/* Category Chips */}
-          <div className="flex flex-wrap gap-1.5">
-            {categories.map((cat) => (
+        {/* Filter Controls: Seasons, Categories, Price Range */}
+        <div className="flex flex-col gap-4 mt-6 pt-6 border-t border-stone-200/70">
+          {/* Season Filter Row */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-bold text-primary whitespace-nowrap mr-2">Season:</span>
+            {seasons.map((s) => (
               <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all border ${
-                  selectedCategory.toLowerCase() === cat.toLowerCase()
+                key={s.id}
+                onClick={() => setSelectedSeason(s.id)}
+                className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all border ${
+                  selectedSeason === s.id
                     ? "bg-primary text-white border-primary shadow-sm"
-                    : "glass-button text-on-surface-variant border-white/70 hover:border-primary hover:text-primary"
+                    : "glass-button text-stone-600 border-white/70 hover:border-primary hover:text-primary"
                 }`}
               >
-                {cat}
+                {s.emoji} {s.label}
               </button>
             ))}
           </div>
 
-          {/* Price Range Slider */}
-          <div className="flex items-center gap-3 bg-white/40 px-4 py-2 rounded-full border border-white/60">
-            <span className="text-xs font-semibold text-on-surface-variant whitespace-nowrap">
-              Max Price: <strong className="text-primary">${maxPrice}</strong>
-            </span>
-            <input
-              type="range"
-              min="5"
-              max="150"
-              step="5"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(parseFloat(e.target.value))}
-              className="w-28 sm:w-36 accent-primary cursor-pointer"
-            />
+          {/* Category Chips & Price Slider */}
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex flex-wrap gap-1.5 items-center">
+              <span className="text-xs font-bold text-primary whitespace-nowrap mr-2">Category:</span>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                    selectedCategory.toLowerCase() === cat.toLowerCase()
+                      ? "bg-primary text-white border-primary shadow-sm"
+                      : "glass-button text-stone-600 border-white/70 hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* Price Range Slider */}
+            <div className="flex items-center gap-3 bg-white/60 px-4 py-2 rounded-full border border-white/80 w-fit">
+              <span className="text-xs font-semibold text-stone-600 whitespace-nowrap">
+                Max Price: <strong className="text-primary">${maxPrice}</strong>
+              </span>
+              <input
+                type="range"
+                min="5"
+                max="150"
+                step="5"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(parseFloat(e.target.value))}
+                className="w-28 sm:w-36 accent-primary cursor-pointer"
+              />
+            </div>
           </div>
         </div>
 
-        {/* Smart AI Substitutes Recommendation */}
-        <div className="mt-4 pt-4 border-t border-white/40 flex flex-col sm:flex-row sm:items-center gap-3">
+        {/* Smart AI Substitutes Recommendation Chips */}
+        <div className="mt-4 pt-4 border-t border-stone-200/60 flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="flex items-center gap-2 text-xs font-bold text-primary">
             <span className="material-symbols-outlined text-base">lightbulb</span>
-            <span>Smart Recommendations:</span>
+            <span>Recommended Suggestions:</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {substitutes.map((s) => (
               <button
                 key={s}
                 onClick={() => handleSubstituteClick(s)}
-                className="glass-button text-[11px] font-medium py-1 px-3 rounded-full text-on-surface hover:text-primary hover:border-primary/40 transition-all"
+                className="glass-button text-[11px] font-medium py-1 px-3 rounded-full text-stone-700 hover:text-primary hover:border-primary/40 transition-all bg-white/50"
               >
                 {s}
               </button>
@@ -170,26 +211,27 @@ export default function SearchResults() {
           ))}
         </section>
       ) : (
-        <div className="glass-panel rounded-3xl p-12 text-center max-w-lg mx-auto border border-white/70">
-          <span className="material-symbols-outlined text-5xl text-on-surface-variant mb-3">search_off</span>
+        <div className="glass-panel rounded-3xl p-12 text-center max-w-lg mx-auto border border-white/70 bg-white/80">
+          <span className="material-symbols-outlined text-5xl text-stone-400 mb-3">search_off</span>
           <h2 className="font-headline text-xl font-bold text-on-surface mb-2">No Items Found</h2>
-          <p className="text-xs text-on-surface-variant mb-6">
-            We couldn't find items matching "{displayQuery}" under ${maxPrice}. Try speaking another voice query or clear filters.
+          <p className="text-xs text-stone-500 mb-6 leading-relaxed">
+            We couldn't find items matching "{displayQuery}" under ${maxPrice}. Try speaking another voice query, resetting season, or clearing filters.
           </p>
           <div className="flex justify-center gap-3">
             <button
               onClick={() => {
                 setSearchParams({ q: "all" });
                 setSelectedCategory("All");
+                setSelectedSeason("All");
                 setMaxPrice(150);
               }}
-              className="bg-primary text-white text-xs font-semibold px-5 py-2.5 rounded-full"
+              className="bg-primary text-white text-xs font-bold px-5 py-2.5 rounded-full"
             >
               Reset Filters
             </button>
             <button
               onClick={openVoiceModal}
-              className="glass-button text-primary text-xs font-semibold px-5 py-2.5 rounded-full flex items-center gap-1.5"
+              className="glass-button text-primary text-xs font-bold px-5 py-2.5 rounded-full flex items-center gap-1.5"
             >
               <span className="material-symbols-outlined text-sm">mic</span> Try Voice
             </button>

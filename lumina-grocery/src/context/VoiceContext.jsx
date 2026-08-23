@@ -51,7 +51,7 @@ export function VoiceProvider({ children }) {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [interimTranscript, setInterimTranscript] = useState("");
-  const [assistantResponse, setAssistantResponse] = useState('Tap the mic or try saying "add 2 apples" or "find items under $10".');
+  const [assistantResponse, setAssistantResponse] = useState('Tap the mic or try saying "add 2 Alphonso Mangoes" or "show summer fruits".');
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [voiceMuted, setVoiceMuted] = useState(false);
@@ -98,7 +98,7 @@ export function VoiceProvider({ children }) {
   // Clean noise words
   const cleanItemName = (text) => {
     return text
-      .replace(/\b(to|from|of|my|the|list|bag|cart|bottles?|bottle|tins?|jars?|packs?|loaves|loaf|pints?|boxes?|please|some|items?|products?)\b/gi, " ")
+      .replace(/\b(to|from|of|my|the|list|bag|cart|bottles?|bottle|tins?|jars?|packs?|loaves|loaf|pints?|boxes?|please|some|items?|products?|show|me|find)\b/gi, " ")
       .replace(/\s+/g, " ")
       .trim()
       .toLowerCase();
@@ -108,12 +108,20 @@ export function VoiceProvider({ children }) {
   const findProductMatch = (query) => {
     if (!query) return null;
     const q = query.toLowerCase().trim();
+
+    // 1. Exact match
     let match = products.find((p) => p.name.toLowerCase() === q);
     if (match) return match;
 
+    // 2. Substring in name
     match = products.find((p) => q.includes(p.name.toLowerCase()) || p.name.toLowerCase().includes(q));
     if (match) return match;
 
+    // 3. Tag match
+    match = products.find((p) => p.tags && p.tags.some((t) => q.includes(t.toLowerCase()) || t.toLowerCase().includes(q)));
+    if (match) return match;
+
+    // 4. Weighted multi-token score
     const qWords = q.split(/\s+/).filter((w) => w.length > 2);
     let bestScore = 0;
     let bestProd = null;
@@ -122,8 +130,10 @@ export function VoiceProvider({ children }) {
       const pNameLower = p.name.toLowerCase();
       let score = 0;
       qWords.forEach((w) => {
-        if (pNameLower.includes(w)) score += 2;
-        if (p.category.toLowerCase().includes(w)) score += 1;
+        if (pNameLower.includes(w)) score += 3;
+        if (p.category.toLowerCase().includes(w)) score += 1.5;
+        if (p.season && p.season.toLowerCase().includes(w)) score += 1.5;
+        if (p.tags && p.tags.some((t) => t.toLowerCase().includes(w))) score += 2;
         if (p.description.toLowerCase().includes(w)) score += 0.5;
       });
       if (score > bestScore) {
@@ -132,7 +142,7 @@ export function VoiceProvider({ children }) {
       }
     });
 
-    return bestScore > 0 ? bestProd : null;
+    return bestScore > 1.5 ? bestProd : null;
   };
 
   // Natural Language Command Processing Engine
@@ -198,7 +208,20 @@ export function VoiceProvider({ children }) {
       return;
     }
 
-    // 5. Check for Remove Intent
+    // 5. Check for Seasonal Search Intent (e.g. "summer fruits", "monsoon specials", "winter items", "spring harvest")
+    const seasonalWords = ["summer", "winter", "monsoon", "spring", "autumn", "festive", "seasonal"];
+    const foundSeason = seasonalWords.find((s) => lower.includes(s));
+    if (foundSeason && (lower.includes("show") || lower.includes("find") || lower.includes("explore") || lower.includes("special") || lower.includes("harvest"))) {
+      const msg = `Showing curated ${foundSeason} collection.`;
+      setAssistantResponse(msg);
+      speakText(msg);
+      navigate(`/search?q=${encodeURIComponent(foundSeason)}`);
+      setTimeout(() => setVoiceOverlayOpen(false), 1400);
+      setIsProcessing(false);
+      return;
+    }
+
+    // 6. Check for Remove Intent
     const removeMatch = activeTable.remove.find((p) => lower.startsWith(p) || lower.includes(" " + p));
     if (removeMatch) {
       const remainder = lower.replace(removeMatch, "").trim();
@@ -219,7 +242,7 @@ export function VoiceProvider({ children }) {
       return;
     }
 
-    // 6. Check for Price Filter (e.g. "find apples under 10 dollars")
+    // 7. Check for Price Filter (e.g. "find apples under 10 dollars")
     const priceMax = extractPriceMax(lower);
     if (priceMax !== null) {
       let topic = lower.replace(/(?:find|search|show|items|products|under|less than|below|cheaper than|\$|\d+(?:\.\d+)?|dollars|euros|rupees)/gi, "").trim();
@@ -234,7 +257,7 @@ export function VoiceProvider({ children }) {
       return;
     }
 
-    // 7. Check for Add Intent (or default if item specified)
+    // 8. Check for Add Intent (or default if item specified)
     const addMatch = activeTable.add.find((p) => lower.startsWith(p) || lower.includes(" " + p));
     let rawItem = lower;
     if (addMatch) {
@@ -244,7 +267,7 @@ export function VoiceProvider({ children }) {
     const { qty, rest } = extractQuantity(rawItem);
     const cleaned = cleanItemName(rest);
 
-    // 8. If Search Intent explicitly requested
+    // 9. If Search Intent explicitly requested
     const searchMatch = activeTable.search.find((p) => lower.startsWith(p) || lower.includes(" " + p));
     if (searchMatch && !addMatch) {
       const searchTarget = cleanItemName(lower.slice(lower.indexOf(searchMatch) + searchMatch.length));
@@ -266,7 +289,7 @@ export function VoiceProvider({ children }) {
       setAssistantResponse(msg);
       speakText(msg);
 
-      // Check if there are smart substitutes or complementary items
+      // Check if there are smart substitutes or complementary pairings
       const subs = RecommendationService.getSubstitutes(matchedProduct.name);
       if (subs.length > 0) {
         setTimeout(() => {
@@ -280,7 +303,7 @@ export function VoiceProvider({ children }) {
       navigate(`/search?q=${encodeURIComponent(cleaned)}`);
       setTimeout(() => setVoiceOverlayOpen(false), 1500);
     } else {
-      const msg = "I didn't catch that item. Try saying 'Add 2 Honeycrisp Apples' or 'Search Skincare'.";
+      const msg = "I didn't catch that item. Try saying 'Add 2 Alphonso Mangoes' or 'Search Skincare'.";
       setAssistantResponse(msg);
       speakText(msg);
     }

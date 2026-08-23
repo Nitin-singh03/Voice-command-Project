@@ -3,31 +3,34 @@ import { useVoice } from "../context/VoiceContext";
 
 const CHIPS_BY_LANG = {
   "en-US": [
-    { label: '🛒 "Add 2 Honeycrisp Apples"', cmd: "Add 2 Honeycrisp Apples to cart" },
-    { label: '✨ "Add Aura Essence"', cmd: "Add Aura Revitalizing Essence to cart" },
-    { label: '💰 "Find fruits under $10"', cmd: "Find fruits under 10 dollars" },
+    { label: '🥭 "Add 2 Alphonso Mangoes"', cmd: "Add 2 Royal Alphonso Mangoes" },
+    { label: '☀️ "Show summer fruits"', cmd: "Show summer fruits" },
     { label: '🍞 "Add Sourdough Boule"', cmd: "Add Artisanal Sourdough Boule" },
+    { label: '🧈 "Add French Truffle Butter"', cmd: "Add French Black Truffle Cultured Butter" },
+    { label: '🍵 "Add Spiced Chai"', cmd: "Add Monsoon Herbal Spiced Chai Blend" },
+    { label: '✨ "Add Aura Essence"', cmd: "Add Aura Revitalizing Essence" },
+    { label: '💰 "Find items under $10"', cmd: "Find items under 10 dollars" },
     { label: '🎁 "Apply coupon LUMINA20"', cmd: "Apply coupon LUMINA20" },
-    { label: '🍵 "Search Matcha"', cmd: "Search Matcha" },
     { label: '🛍️ "Go to cart"', cmd: "Go to cart" },
   ],
   "es-ES": [
-    { label: '🛒 "Añade 2 manzanas"', cmd: "Añade 2 Honeycrisp Apples" },
+    { label: '🥭 "Añade 2 mangos"', cmd: "Añade 2 Royal Alphonso Mangoes" },
     { label: '🍞 "Añade pan artesanal"', cmd: "Añade Artisanal Sourdough Boule" },
     { label: '💰 "Busca frutas bajo $10"', cmd: "Busca frutas under 10 dollars" },
     { label: '🛍️ "Ir al carrito"', cmd: "Ir al carrito" },
   ],
   "hi-IN": {
     chips: [
-      { label: '🛒 "2 सेब जोड़ो"', cmd: "2 Honeycrisp Apples जोड़ो" },
-      { label: '🍞 "ब्रेड कार्ट में डालो"', cmd: "Artisanal Sourdough Boule जोड़ो" },
-      { label: '💰 "10 डॉलर से कम का सामान खोजो"', cmd: "fruits under 10 dollars" },
+      { label: '🥭 "2 आम जोड़ो"', cmd: "2 Royal Alphonso Mangoes जोड़ो" },
+      { label: '🍞 "सोरडो ब्रेड डालो"', cmd: "Artisanal Sourdough Boule जोड़ो" },
+      { label: '🍵 "मसाला चाय जोड़ो"', cmd: "Monsoon Herbal Spiced Chai Blend जोड़ो" },
+      { label: '💰 "10 डॉलर से कम का सामान खोजो"', cmd: "items under 10 dollars" },
       { label: '🛍️ "कार्ट खोलो"', cmd: "कार्ट खोलो" },
     ],
   },
   "ta-IN": {
     chips: [
-      { label: '🛒 "ஆப்பிள் சேர்"', cmd: "Honeycrisp Apples சேர்" },
+      { label: '🥭 "மாம்பழம் சேர்"', cmd: "Royal Alphonso Mangoes சேர்" },
       { label: '🍞 "ரொட்டி சேர்"', cmd: "Artisanal Sourdough Boule சேர்" },
       { label: '🛍️ "கார்ட் திற"', cmd: "கார்ட் திற" },
     ],
@@ -79,14 +82,14 @@ export default function VoiceOverlay() {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/45 backdrop-blur-md p-4 animate-fadeIn"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-md p-4 animate-fadeIn"
       onClick={() => {
         stopListening();
         setVoiceOverlayOpen(false);
       }}
     >
       <div
-        className="glass-modal p-6 md:p-8 rounded-3xl flex flex-col items-center text-center ambient-shadow max-w-lg w-full relative border border-white/80 shadow-2xl"
+        className="glass-modal p-6 md:p-8 rounded-3xl flex flex-col items-center text-center ambient-shadow max-w-lg w-full relative border border-white/80 shadow-2xl bg-white/90"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Controls: Lang & Settings */}
@@ -101,7 +104,7 @@ export default function VoiceOverlay() {
             <select
               value={currentLang}
               onChange={(e) => setCurrentLang(e.target.value)}
-              className="bg-white/60 border border-white/80 rounded-lg text-xs font-semibold px-2.5 py-1 text-on-surface focus:outline-none focus:ring-1 focus:ring-primary"
+              className="bg-white/70 border border-white/80 rounded-lg text-xs font-semibold px-2.5 py-1 text-on-surface focus:outline-none focus:ring-1 focus:ring-primary shadow-xs"
             >
               <option value="en-US">English (US)</option>
               <option value="es-ES">Español</option>
@@ -112,7 +115,7 @@ export default function VoiceOverlay() {
             <button
               onClick={() => setVoiceMuted(!voiceMuted)}
               title={voiceMuted ? "Unmute Voice Response" : "Mute Voice Response"}
-              className="p-1.5 rounded-full hover:bg-white/60 text-on-surface-variant transition-colors"
+              className="p-1.5 rounded-full hover:bg-stone-100 text-stone-600 transition-colors"
             >
               <span className="material-symbols-outlined text-lg">
                 {voiceMuted ? "volume_off" : "volume_up"}
@@ -124,7 +127,7 @@ export default function VoiceOverlay() {
                 stopListening();
                 setVoiceOverlayOpen(false);
               }}
-              className="p-1.5 rounded-full hover:bg-white/60 text-on-surface-variant transition-colors"
+              className="p-1.5 rounded-full hover:bg-stone-100 text-stone-600 transition-colors"
             >
               <span className="material-symbols-outlined text-lg">close</span>
             </button>
@@ -142,7 +145,7 @@ export default function VoiceOverlay() {
             className={`relative z-10 w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl ${
               isListening
                 ? "bg-gradient-to-tr from-primary to-purple-600 text-white scale-110 shadow-primary/40 ring-4 ring-primary/30"
-                : "bg-white/80 text-primary hover:bg-white hover:scale-105 border border-primary/20"
+                : "bg-white text-primary hover:bg-stone-50 hover:scale-105 border border-primary/20"
             }`}
           >
             <span className="material-symbols-outlined text-3xl">
@@ -168,7 +171,7 @@ export default function VoiceOverlay() {
                 Hearing your voice in {currentLang.split("-")[0].toUpperCase()}...
               </span>
               <p className="text-sm md:text-base font-medium text-on-surface italic">
-                {interimTranscript || transcript || 'Speak now: "Add organic apples" or "Search skincare"'}
+                {interimTranscript || transcript || 'Speak now: "Add 2 Alphonso Mangoes" or "Show summer fruits"'}
               </p>
             </div>
           ) : isProcessing ? (
@@ -177,9 +180,9 @@ export default function VoiceOverlay() {
               <span>Thinking & processing your instruction...</span>
             </div>
           ) : (
-            <div className="bg-white/60 backdrop-blur-md rounded-2xl p-3 border border-white/80 w-full text-left">
+            <div className="bg-white/70 backdrop-blur-md rounded-2xl p-3 border border-white/80 w-full text-left shadow-xs">
               <p className="text-[10px] font-bold text-primary/80 uppercase tracking-wider mb-0.5 flex items-center gap-1">
-                <span className="material-symbols-outlined text-xs">auto_awesome</span> Lumina AI Response
+                <span className="material-symbols-outlined text-xs">auto_awesome</span> Lumina AI Assistant
               </p>
               <p className="text-xs md:text-sm font-medium text-on-surface">
                 {assistantResponse}
@@ -196,7 +199,7 @@ export default function VoiceOverlay() {
 
         {/* Intelligent Suggestion Chips */}
         <div className="w-full text-left mt-1">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-on-surface-variant/80 mb-2 px-1">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-2 px-1">
             Tap a quick command:
           </p>
           <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto pr-1">
@@ -204,7 +207,7 @@ export default function VoiceOverlay() {
               <button
                 key={idx}
                 onClick={() => handleChipClick(item.cmd)}
-                className="glass-button text-[11px] py-1.5 px-3 rounded-full text-on-surface hover:text-primary hover:border-primary/50 transition-all text-left"
+                className="glass-button text-[11px] py-1.5 px-3 rounded-full text-stone-800 hover:text-primary hover:border-primary/50 transition-all text-left bg-white/60"
               >
                 {item.label}
               </button>
@@ -218,8 +221,8 @@ export default function VoiceOverlay() {
             type="text"
             value={typedInput}
             onChange={(e) => setTypedInput(e.target.value)}
-            placeholder='Or type "add 2 apples" / "find items under $10"...'
-            className="glass-input text-xs py-2 px-3.5 rounded-full flex-grow text-on-surface"
+            placeholder='Or type "add 2 Alphonso Mangoes" / "show summer fruits"...'
+            className="glass-input text-xs py-2 px-3.5 rounded-full flex-grow text-on-surface bg-white/70"
           />
           <button
             type="submit"

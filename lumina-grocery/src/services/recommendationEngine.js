@@ -2,56 +2,86 @@ import { products } from "../data/products";
 
 const EVENTS_STORAGE_KEY = "lumina_shopping_events_log";
 
-// Pre-defined substitutes map for complementary and alternative suggestions
+// Comprehensive substitutes and pairing map for smart recommendations
 export const SUBSTITUTES_MAP = {
-  "honeycrisp apples": ["Granny Smith Apples", "Organic Fuji Apples", "Wild Organic Blueberries"],
-  "granny smith apples": ["Honeycrisp Apples", "Organic Fuji Apples"],
-  "organic fuji apples": ["Honeycrisp Apples", "Wild Organic Blueberries"],
-  "wild organic blueberries": ["Honeycrisp Apples", "Organic Fuji Apples"],
-  "aura revitalizing essence": ["Botanical Restorative Night Balm", "Spring Botanical Collection"],
-  "lumina essential oils set": ["Spring Botanical Collection", "Organic Matcha Ceremony Grade"],
-  "spring botanical collection": ["Lumina Essential Oils Set", "Botanical Restorative Night Balm"],
-  "artisanal sourdough boule": ["Organic Matcha Ceremony Grade", "Cold-Pressed Raw Honey"],
-  "organic matcha ceremony grade": ["Cold-Pressed Raw Honey", "Lumina Essential Oils Set"],
-  "cold-pressed raw honey": ["Organic Matcha Ceremony Grade", "Artisanal Sourdough Boule"],
-  "botanical restorative night balm": ["Aura Revitalizing Essence", "Lumina Essential Oils Set"],
-  "eco-friendly zero waste bundle": ["Spring Botanical Collection"],
+  "honeycrisp apples": ["Granny Smith Apples", "Golden Spiced Apple & Pear Cider", "Cold-Pressed Raw Honey", "Wild Organic Blueberries"],
+  "granny smith apples": ["Honeycrisp Apples", "Artisanal Sourdough Boule", "Meyer Lemons"],
+  "royal alphonso mangoes": ["Rainier Sweet Golden Cherries", "Wild Organic Blueberries", "Authentic Greek Sheep Milk Yogurt"],
+  "wild organic blueberries": ["Honeycrisp Apples", "Authentic Greek Sheep Milk Yogurt", "Royal Alphonso Mangoes"],
+  "rainier sweet golden cherries": ["Royal Alphonso Mangoes", "Wild Organic Blueberries", "Black Mission Figs"],
+  "black mission figs": ["Artisanal Aged Farmhouse Cheese", "Extra Virgin First Harvest Olive Oil", "Cold-Pressed Raw Honey"],
+  "artisanal sourdough boule": ["French Black Truffle Cultured Butter", "Cold-Pressed Raw Honey", "Artisanal Aged Farmhouse Cheese", "Rosemary Sea Salt Focaccia"],
+  "french pure butter croissants": ["Cold Brew Single-Origin Coffee", "Organic Matcha Ceremony Grade", "French Black Truffle Cultured Butter"],
+  "french black truffle cultured butter": ["Artisanal Sourdough Boule", "Artisanal Bronze-Cut Pasta", "Japanese Shiitake Mushrooms"],
+  "authentic greek sheep milk yogurt": ["Cold-Pressed Raw Honey", "Wild Organic Blueberries", "Rainier Sweet Golden Cherries"],
+  "organic matcha ceremony grade": ["Oat Milk Barista Edition", "Organic Almond Milk", "Swedish Cardamom Morning Buns"],
+  "cold brew single-origin coffee": ["Oat Milk Barista Edition", "French Pure Butter Croissants", "Swedish Cardamom Morning Buns"],
+  "monsoon herbal spiced chai blend": ["Cold-Pressed Raw Honey", "Swedish Cardamom Morning Buns", "Whole Farm Fresh Milk"],
+  "cold-pressed raw honey": ["Artisanal Sourdough Boule", "Organic Matcha Ceremony Grade", "Monsoon Herbal Spiced Chai Blend", "Authentic Greek Sheep Milk Yogurt"],
+  "extra virgin first harvest olive oil": ["25-Year Aged Balsamic of Modena IGP", "Fresh French Genovese Basil", "Artisanal Bronze-Cut Pasta", "Rosemary Sea Salt Focaccia"],
+  "25-year aged balsamic of modena igp": ["Extra Virgin First Harvest Olive Oil", "Artisanal Aged Farmhouse Cheese", "Black Mission Figs"],
+  "aura revitalizing essence": ["Damask Rose Hydrating Face Mist", "Botanical Restorative Night Balm", "Spring Botanical Collection"],
+  "botanical restorative night balm": ["Aura Revitalizing Essence", "Lumina Essential Oils Set", "Damask Rose Hydrating Face Mist"],
+  "damask rose hydrating face mist": ["Aura Revitalizing Essence", "Botanical Restorative Night Balm", "Wild Lavender Herbal Sparkling Tonic"],
+  "lumina essential oils set": ["Spring Botanical Collection", "Wildcrafted Elderberry & Zinc Tonic"],
+  "spring botanical collection": ["Lumina Essential Oils Set", "Wild Lavender Herbal Sparkling Tonic"],
+  "organic wild lion's mane extract": ["Monsoon Herbal Spiced Chai Blend", "Organic Matcha Ceremony Grade"],
+  "wildcrafted elderberry & zinc tonic": ["Cold-Pressed Valencia Orange Juice", "Monsoon Herbal Spiced Chai Blend", "Winter Alpine Dark Hot Cocoa Blend"],
+  "artisanal dark truffle gift box": ["Winter Alpine Dark Hot Cocoa Blend", "Artisanal Aged Farmhouse Cheese", "25-Year Aged Balsamic of Modena IGP"],
+  "eco-friendly zero waste bundle": ["Plant-Based Dish Soap", "Botanical Whitening Toothpaste", "Cedarwood & Lavender Laundry Detergent"],
 };
 
 export const SEASONAL_ITEMS = [
-  "Honeycrisp Apples",
+  "Royal Alphonso Mangoes",
+  "Rainier Sweet Golden Cherries",
   "Wild Organic Blueberries",
-  "Artisanal Sourdough Boule",
+  "Honeycrisp Apples",
+  "Black Mission Figs",
+  "French Black Truffle Cultured Butter",
+  "Monsoon Herbal Spiced Chai Blend",
+  "Winter Alpine Dark Hot Cocoa Blend",
+  "Golden Spiced Apple & Pear Cider",
+  "Organic Matcha Ceremony Grade",
+  "Aura Revitalizing Essence",
   "Cold-Pressed Raw Honey",
 ];
 
-// Seed events so recommendations provide rich, immediate value on first install
+// Seed events representing realistic grocery shopping sessions
 function getSeedEvents() {
   const day = 86400000;
   const now = Date.now();
   const at = (daysAgo) => now - daysAgo * day;
   return [
-    // Session 14 days ago: Apples + Sourdough + Honey
+    // Session 14 days ago: Apples + Sourdough + Truffle Butter + Honey
     { item: "Honeycrisp Apples", action: "add", qty: 2, ts: at(14) },
     { item: "Artisanal Sourdough Boule", action: "add", qty: 1, ts: at(14) + 1000 },
-    { item: "Cold-Pressed Raw Honey", action: "add", qty: 1, ts: at(14) + 2000 },
+    { item: "French Black Truffle Cultured Butter", action: "add", qty: 1, ts: at(14) + 2000 },
+    { item: "Cold-Pressed Raw Honey", action: "add", qty: 1, ts: at(14) + 3000 },
 
-    // Session 7 days ago: Apples + Blueberries + Matcha
-    { item: "Honeycrisp Apples", action: "add", qty: 2, ts: at(7) },
-    { item: "Wild Organic Blueberries", action: "add", qty: 1, ts: at(7) + 1000 },
-    { item: "Organic Matcha Ceremony Grade", action: "add", qty: 1, ts: at(7) + 2000 },
+    // Session 10 days ago: Sourdough + Truffle Butter
+    { item: "Artisanal Sourdough Boule", action: "add", qty: 1, ts: at(10) },
+    { item: "French Black Truffle Cultured Butter", action: "add", qty: 1, ts: at(10) + 1000 },
 
-    // Session 10 days ago: Aura Essence + Night Balm
-    { item: "Aura Revitalizing Essence", action: "add", qty: 1, ts: at(10) },
-    { item: "Botanical Restorative Night Balm", action: "add", qty: 1, ts: at(10) + 1000 },
+    // Session 7 days ago: Alphonso Mangoes + Greek Yogurt + Honey + Matcha
+    { item: "Royal Alphonso Mangoes", action: "add", qty: 1, ts: at(7) },
+    { item: "Authentic Greek Sheep Milk Yogurt", action: "add", qty: 1, ts: at(7) + 1000 },
+    { item: "Cold-Pressed Raw Honey", action: "add", qty: 1, ts: at(7) + 2000 },
+    { item: "Organic Matcha Ceremony Grade", action: "add", qty: 1, ts: at(7) + 3000 },
 
-    // Session 4 days ago: Sourdough + Honey
-    { item: "Artisanal Sourdough Boule", action: "add", qty: 1, ts: at(4) },
-    { item: "Cold-Pressed Raw Honey", action: "add", qty: 1, ts: at(4) + 1000 },
+    // Session 5 days ago: Matcha + Oat Milk + Morning Buns
+    { item: "Organic Matcha Ceremony Grade", action: "add", qty: 1, ts: at(5) },
+    { item: "Oat Milk Barista Edition", action: "add", qty: 2, ts: at(5) + 1000 },
+    { item: "Swedish Cardamom Morning Buns", action: "add", qty: 1, ts: at(5) + 2000 },
 
-    // Session 3 days ago: Essential oils + Botanical collection
-    { item: "Lumina Essential Oils Set", action: "add", qty: 1, ts: at(3) },
-    { item: "Spring Botanical Collection", action: "add", qty: 1, ts: at(3) + 1000 },
+    // Session 4 days ago: Skincare Trio
+    { item: "Aura Revitalizing Essence", action: "add", qty: 1, ts: at(4) },
+    { item: "Botanical Restorative Night Balm", action: "add", qty: 1, ts: at(4) + 1000 },
+    { item: "Damask Rose Hydrating Face Mist", action: "add", qty: 1, ts: at(4) + 2000 },
+
+    // Session 2 days ago: Olive Oil + Balsamic + Pasta + Basil
+    { item: "Extra Virgin First Harvest Olive Oil", action: "add", qty: 1, ts: at(2) },
+    { item: "25-Year Aged Balsamic of Modena IGP", action: "add", qty: 1, ts: at(2) + 1000 },
+    { item: "Artisanal Bronze-Cut Pasta", action: "add", qty: 2, ts: at(2) + 2000 },
   ];
 }
 
@@ -122,7 +152,18 @@ export const RecommendationService = {
       });
     });
 
-    // Match back to full product objects
+    // Fallback complementary recommendations if basket has no historical pair
+    if (Object.keys(scores).length === 0 && currentCartItemNames.length > 0) {
+      currentCartItemNames.forEach((name) => {
+        const subs = this.getSubstitutes(name);
+        subs.forEach((prod) => {
+          if (!currentCartItemNames.includes(prod.name)) {
+            scores[prod.name] = (scores[prod.name] || 0) + 1;
+          }
+        });
+      });
+    }
+
     return Object.entries(scores)
       .sort((a, b) => b[1] - a[1])
       .slice(0, limit)
@@ -175,7 +216,7 @@ export const RecommendationService = {
       .slice(0, limit);
   },
 
-  // 3. Smart Substitutes Lookup
+  // 3. Smart Substitutes & Complementary Lookup
   getSubstitutes(productName) {
     const clean = productName.toLowerCase();
     for (const key in SUBSTITUTES_MAP) {
@@ -187,4 +228,12 @@ export const RecommendationService = {
     }
     return [];
   },
+
+  // 4. Get Seasonal Highlights
+  getSeasonalRecommendations(seasonName = null, limit = 6) {
+    if (seasonName && seasonName !== "All") {
+      return products.filter((p) => p.season === seasonName).slice(0, limit);
+    }
+    return products.filter((p) => p.isSeasonal).slice(0, limit);
+  }
 };
