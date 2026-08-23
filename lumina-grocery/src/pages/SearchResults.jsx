@@ -47,19 +47,33 @@ export default function SearchResults() {
     let list = products;
 
     if (rawQuery && rawQuery.toLowerCase() !== "all") {
-      const q = rawQuery.toLowerCase();
+      const q = rawQuery.toLowerCase().trim();
       if (q === "seasonal") {
         list = list.filter((p) => p.isSeasonal);
       } else {
-        list = list.filter(
-          (p) =>
+        const tokens = q.split(/\s+/).filter((w) => w.length > 1);
+        list = list.filter((p) => {
+          // Check full query match first
+          if (
             p.name.toLowerCase().includes(q) ||
             p.category.toLowerCase().includes(q) ||
             p.description.toLowerCase().includes(q) ||
             (p.season && p.season.toLowerCase().includes(q)) ||
             (p.badge && p.badge.toLowerCase().includes(q)) ||
             (p.tags && p.tags.some((t) => t.toLowerCase().includes(q)))
-        );
+          ) {
+            return true;
+          }
+          // Match any individual token
+          return tokens.some((tok) =>
+            p.name.toLowerCase().includes(tok) ||
+            p.category.toLowerCase().includes(tok) ||
+            p.description.toLowerCase().includes(tok) ||
+            (p.season && p.season.toLowerCase().includes(tok)) ||
+            (p.badge && p.badge.toLowerCase().includes(tok)) ||
+            (p.tags && p.tags.some((t) => t.toLowerCase().includes(tok)))
+          );
+        });
       }
     }
 
