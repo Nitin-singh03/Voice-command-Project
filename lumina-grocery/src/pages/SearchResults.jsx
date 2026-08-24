@@ -31,7 +31,7 @@ export default function SearchResults() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedSeason, setSelectedSeason] = useState("All");
   const [sortBy, setSortBy] = useState("relevance");
-  const [maxPrice, setMaxPrice] = useState(maxPriceParam ? parseFloat(maxPriceParam) : 150);
+  const [maxPrice, setMaxPrice] = useState(maxPriceParam ? parseFloat(maxPriceParam) : 5000);
 
   const displayQuery = rawQuery && rawQuery !== "all" ? rawQuery : "All Products";
 
@@ -149,11 +149,10 @@ export default function SearchResults() {
               <button
                 key={s.id}
                 onClick={() => setSelectedSeason(s.id)}
-                className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all border flex items-center gap-1 ${
-                  selectedSeason === s.id
+                className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all border flex items-center gap-1 ${selectedSeason === s.id
                     ? "bg-primary text-white border-primary shadow-sm"
                     : "glass-button text-stone-600 border-white/70 hover:border-primary hover:text-primary"
-                }`}
+                  }`}
               >
                 {s.icon && <span className="material-symbols-outlined text-xs">{s.icon}</span>}
                 <span>{s.label}</span>
@@ -169,11 +168,10 @@ export default function SearchResults() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
-                    selectedCategory.toLowerCase() === cat.toLowerCase()
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${selectedCategory.toLowerCase() === cat.toLowerCase()
                       ? "bg-primary text-white border-primary shadow-sm"
                       : "glass-button text-stone-600 border-white/70 hover:border-primary hover:text-primary"
-                  }`}
+                    }`}
                 >
                   {cat}
                 </button>
@@ -183,13 +181,13 @@ export default function SearchResults() {
             {/* Price Range Slider */}
             <div className="flex items-center gap-3 bg-white/60 px-4 py-2 rounded-full border border-white/80 w-fit">
               <span className="text-xs font-semibold text-stone-600 whitespace-nowrap">
-                Max Price: <strong className="text-primary">${maxPrice}</strong>
+                Max Price: <strong className="text-primary">₹{maxPrice.toLocaleString("en-IN")}</strong>
               </span>
               <input
                 type="range"
-                min="5"
-                max="150"
-                step="5"
+                min="100"
+                max="5000"
+                step="100"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(parseFloat(e.target.value))}
                 className="w-28 sm:w-36 accent-primary cursor-pointer"
@@ -230,7 +228,7 @@ export default function SearchResults() {
           <span className="material-symbols-outlined text-5xl text-stone-400 mb-3">search_off</span>
           <h2 className="font-headline text-xl font-bold text-on-surface mb-2">No Items Found</h2>
           <p className="text-xs text-stone-500 mb-6 leading-relaxed">
-            We couldn't find items matching "{displayQuery}" under ${maxPrice}. Try speaking another voice query, resetting season, or clearing filters.
+            We couldn't find items matching "{displayQuery}" under ₹{maxPrice}. Try speaking another voice query, resetting season, or clearing filters.
           </p>
           <div className="flex justify-center gap-3">
             <button

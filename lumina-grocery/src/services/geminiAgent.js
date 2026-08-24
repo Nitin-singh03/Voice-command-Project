@@ -55,11 +55,11 @@ export const GeminiVoiceAgent = {
       description: p.description,
     }));
 
-    const cartSummary = currentCart.map((c) => `${c.qty}x ${c.name} ($${(c.price * c.qty).toFixed(2)})`).join(", ");
+    const cartSummary = currentCart.map((c) => `${c.qty}x ${c.name} (₹${(c.price * c.qty).toLocaleString("en-IN")})`).join(", ");
 
     const systemPrompt = `You are Lumina's Voice AI Agent & Shopping Orchestrator for a luxury organic grocery store.
 You understand English, Hindi (हिन्दी in Devanagari), and conversational Hinglish.
-You maintain full context across conversation turns.
+You maintain full context across conversation turns. All prices and money amounts are in Indian Rupees (₹).
 
 Available Product Catalog:
 ${JSON.stringify(catalogSummary, null, 2)}
@@ -67,12 +67,12 @@ ${JSON.stringify(catalogSummary, null, 2)}
 Current User Cart: [${cartSummary || "Empty"}]
 
 Real-time Order Financial Summary:
-- Bag Subtotal: ${orderSummary.subtotal || "$0.00"}
+- Bag Subtotal: ${orderSummary.subtotal || "₹0"}
 - Applied Promo Code: ${orderSummary.appliedCoupon || "None"}
-- Promo Discount: ${orderSummary.discountAmount || "$0.00"}
-- Eco Delivery Shipping: ${orderSummary.shippingFee || "$0.00"}
-- Estimated Sales Tax (8.25%): ${orderSummary.estimatedTax || "$0.00"}
-- Total Amount: ${orderSummary.totalAmount || "$0.00"}
+- Promo Discount: ${orderSummary.discountAmount || "₹0"}
+- Eco Delivery Shipping: ${orderSummary.shippingFee || "₹0"}
+- Estimated Sales Tax (8.25%): ${orderSummary.estimatedTax || "₹0"}
+- Total Amount: ${orderSummary.totalAmount || "₹0"}
 
 You must analyze the user's raw speech and invoke the appropriate MCP tool action:
 
@@ -84,7 +84,7 @@ MCP TOOL ACTIONS:
    - Use when user wants to remove, delete, or cancel items from their cart.
    - "items": Array of objects: [{ "name": "Exact Catalog Product Name", "qty": 1 }]
 3. "search_catalog":
-   - ONLY when user explicitly asks to search, find, show, or browse catalog items/seasons (e.g. "show summer fruits", "find matcha", "items under $10").
+   - ONLY when user explicitly asks to search, find, show, or browse catalog items/seasons (e.g. "show summer fruits", "find matcha", "items under ₹500").
    - "searchQuery": search query string
    - "maxPrice": number or null
 4. "check_restock":
@@ -122,14 +122,14 @@ User: "What is my total amount?" or "Show order summary"
 Response:
 {
   "tool": "general_answer",
-  "spokenResponse": "Your subtotal is ${orderSummary.subtotal || "$0.00"}, delivery is ${orderSummary.shippingFee || "$0.00"}, and tax is ${orderSummary.estimatedTax || "$0.00"}, making your total amount ${orderSummary.totalAmount || "$0.00"}."
+  "spokenResponse": "Your subtotal is ${orderSummary.subtotal || "₹0"}, delivery is ${orderSummary.shippingFee || "₹0"}, and tax is ${orderSummary.estimatedTax || "₹0"}, making your total amount ${orderSummary.totalAmount || "₹0"}."
 }
 
 User (Hindi): "कुल कितना पैसा हुआ?" / "टोटल कितना है?"
 Response:
 {
   "tool": "general_answer",
-  "spokenResponse": "आपका सबटोटल ${orderSummary.subtotal || "$0.00"} है, डिलीवरी शुल्क ${orderSummary.shippingFee || "$0.00"} है और टैक्स ${orderSummary.estimatedTax || "$0.00"} है। कुल राशि ${orderSummary.totalAmount || "$0.00"} है।"
+  "spokenResponse": "आपका सबटोटल ${orderSummary.subtotal || "₹0"} है, डिलीवरी शुल्क ${orderSummary.shippingFee || "₹0"} है और टैक्स ${orderSummary.estimatedTax || "₹0"} है। कुल राशि ${orderSummary.totalAmount || "₹0"} है।"
 }
 
 User: "What should I eat today?"

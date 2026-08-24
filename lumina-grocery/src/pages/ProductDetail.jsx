@@ -89,11 +89,10 @@ export default function ProductDetail() {
             {/* Wishlist Button */}
             <button
               onClick={() => toggleWishlist(product)}
-              className={`absolute top-4 right-4 w-11 h-11 rounded-full backdrop-blur-md border flex items-center justify-center transition-all ${
-                isFav
+              className={`absolute top-4 right-4 w-11 h-11 rounded-full backdrop-blur-md border flex items-center justify-center transition-all ${isFav
                   ? "bg-pink-500 text-white border-pink-400 shadow-md scale-105"
                   : "bg-white/70 border-white/80 text-stone-700 hover:text-pink-500 hover:bg-white"
-              }`}
+                }`}
             >
               <span className="material-symbols-outlined text-xl">
                 {isFav ? "favorite" : "favorite_border"}
@@ -108,9 +107,8 @@ export default function ProductDetail() {
                 <button
                   key={i}
                   onClick={() => setActiveImg(i)}
-                  className={`w-20 h-20 rounded-2xl overflow-hidden glass-panel border-2 transition-all ${
-                    activeImg === i ? "border-primary scale-105 ring-2 ring-primary/20" : "border-white/60 hover:opacity-90"
-                  }`}
+                  className={`w-20 h-20 rounded-2xl overflow-hidden glass-panel border-2 transition-all ${activeImg === i ? "border-primary scale-105 ring-2 ring-primary/20" : "border-white/60 hover:opacity-90"
+                    }`}
                 >
                   <img src={img} alt="" className="w-full h-full object-cover" />
                 </button>
@@ -175,11 +173,11 @@ export default function ProductDetail() {
 
               <div className="flex items-baseline gap-2 mb-4">
                 <span className="font-headline text-3xl font-black text-primary">
-                  ${product.price.toFixed(2)}
+                  ₹{product.price.toLocaleString("en-IN")}
                 </span>
                 {product.originalPrice && product.originalPrice > product.price && (
                   <span className="text-base text-stone-400 line-through font-medium">
-                    ${product.originalPrice.toFixed(2)}
+                    ₹{product.originalPrice.toLocaleString("en-IN")}
                   </span>
                 )}
                 <span className="text-sm text-stone-500 font-medium">/ {product.unit}</span>
@@ -217,7 +215,7 @@ export default function ProductDetail() {
                 className="w-full bg-primary text-on-primary font-label text-sm font-bold py-4 rounded-full shadow-[0_8px_20px_rgba(131,70,145,0.3)] hover:bg-opacity-95 transition-all flex items-center justify-center gap-2 hover:scale-[1.01]"
               >
                 <span className="material-symbols-outlined text-lg">shopping_bag</span>
-                Add {qty > 1 ? `${qty} items` : "to Bag"} — ${(product.price * qty).toFixed(2)}
+                Add {qty > 1 ? `${qty} items` : "to Bag"} — ₹{(product.price * qty).toLocaleString("en-IN")}
               </button>
 
               {/* Voice Add to Cart Button */}
@@ -227,11 +225,10 @@ export default function ProductDetail() {
                 onTouchStart={startListening}
                 onTouchEnd={stopListening}
                 onClick={() => openVoiceModal()}
-                className={`w-full py-3.5 rounded-full font-label text-xs font-bold flex items-center justify-center gap-2 border transition-all ${
-                  isListening
+                className={`w-full py-3.5 rounded-full font-label text-xs font-bold flex items-center justify-center gap-2 border transition-all ${isListening
                     ? "bg-primary text-white border-primary pulse-glow"
                     : "glass-button text-primary border-primary/30 hover:bg-white"
-                }`}
+                  }`}
               >
                 <span className="material-symbols-outlined text-base">
                   {isListening ? "graphic_eq" : "mic"}

@@ -1,4 +1,4 @@
-export const products = [
+const rawProducts = [
   // ==========================================
   // 1. FRESH PRODUCE & HEIRLOOM FRUITS
   // ==========================================
@@ -1181,6 +1181,12 @@ export const products = [
     tags: ["hot chocolate", "cocoa", "winter", "beverages", "chocolate", "sweet"],
   },
 ];
+
+export const products = rawProducts.map((p) => ({
+  ...p,
+  price: Math.round(p.price * 80),
+  originalPrice: p.originalPrice ? Math.round(p.originalPrice * 80) : undefined,
+}));
 
 export const seasons = [
   { id: "All", label: "All Seasons", icon: "all_inclusive", subtitle: "Year-round biodynamic produce and artisanal essentials" },

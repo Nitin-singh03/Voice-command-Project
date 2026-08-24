@@ -110,7 +110,7 @@ export default function RecommendationPanel({ compact = false }) {
                         </h4>
                       </Link>
                       <span className="font-headline text-sm font-extrabold text-primary">
-                        ${product.price.toFixed(2)}
+                        ₹{product.price.toLocaleString("en-IN")}
                       </span>
                     </div>
                   </div>
@@ -180,7 +180,7 @@ export default function RecommendationPanel({ compact = false }) {
                       </h4>
                     </Link>
                     <span className="font-headline text-sm font-extrabold text-primary">
-                      ${product.price.toFixed(2)}
+                      ₹{product.price.toLocaleString("en-IN")}
                     </span>
                   </div>
                 </div>
@@ -245,7 +245,7 @@ export default function RecommendationPanel({ compact = false }) {
                     </h4>
                   </Link>
                   <p className="font-headline text-xs font-bold text-primary mt-0.5">
-                    ${product.price.toFixed(2)}
+                    ₹{product.price.toLocaleString("en-IN")}
                   </p>
                 </div>
 

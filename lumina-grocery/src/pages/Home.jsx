@@ -10,7 +10,7 @@ const heroBg = "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=f
 
 const offers = [
   { icon: "spa", text: "20% Off With Voice Code: LUMINA20" },
-  { icon: "local_shipping", text: "Free Eco-Courier Delivery on Orders Over $75" },
+  { icon: "local_shipping", text: "Free Eco-Courier Delivery on Orders Over ₹1,000" },
   { icon: "nature", text: "100% Certified Biodynamic & Plastic-Free Packaging" },
   { icon: "bolt", text: "1-Hour Express Voice Checkout Available" },
   { icon: "sunny", text: "Summer Harvest: Royal Alphonso Mangoes Now In Stock" },
@@ -151,11 +151,10 @@ export default function Home() {
               <button
                 key={s.id}
                 onClick={() => setSelectedSeason(s.id)}
-                className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-sm ${
-                  selectedSeason === s.id
+                className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 border shadow-sm ${selectedSeason === s.id
                     ? "bg-primary text-white border-primary shadow-md scale-105 ring-2 ring-primary/20"
                     : "glass-button text-stone-700 border-white/80 hover:border-primary hover:text-primary"
-                }`}
+                  }`}
               >
                 {s.icon && <span className="material-symbols-outlined text-sm">{s.icon}</span>}
                 <span>{s.label}</span>
@@ -231,7 +230,7 @@ export default function Home() {
                       <img src={p.image} alt={p.name} className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
                       <div className="min-w-0">
                         <h4 className="font-headline font-bold text-xs text-on-surface hover:text-primary truncate">{p.name}</h4>
-                        <p className="text-[11px] text-stone-500 font-bold text-primary">${p.price.toFixed(2)} <span className="text-stone-400 font-normal">/{p.unit}</span></p>
+                        <p className="text-[11px] text-stone-500 font-bold text-primary">₹{p.price.toLocaleString("en-IN")} <span className="text-stone-400 font-normal">/{p.unit}</span></p>
                       </div>
                     </Link>
                     <button
@@ -270,7 +269,7 @@ export default function Home() {
                       <img src={p.image} alt={p.name} className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
                       <div className="min-w-0">
                         <h4 className="font-headline font-bold text-xs text-on-surface hover:text-primary truncate">{p.name}</h4>
-                        <p className="text-[11px] text-stone-500 font-bold text-primary">${p.price.toFixed(2)} <span className="text-stone-400 font-normal">/{p.unit}</span></p>
+                        <p className="text-[11px] text-stone-500 font-bold text-primary">₹{p.price.toLocaleString("en-IN")} <span className="text-stone-400 font-normal">/{p.unit}</span></p>
                       </div>
                     </Link>
                     <button
@@ -309,7 +308,7 @@ export default function Home() {
                       <img src={p.image} alt={p.name} className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
                       <div className="min-w-0">
                         <h4 className="font-headline font-bold text-xs text-on-surface hover:text-primary truncate">{p.name}</h4>
-                        <p className="text-[11px] text-stone-500 font-bold text-primary">${p.price.toFixed(2)} <span className="text-stone-400 font-normal">/{p.unit}</span></p>
+                        <p className="text-[11px] text-stone-500 font-bold text-primary">₹{p.price.toLocaleString("en-IN")} <span className="text-stone-400 font-normal">/{p.unit}</span></p>
                       </div>
                     </Link>
                     <button
@@ -369,11 +368,10 @@ export default function Home() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all border shadow-sm ${
-                activeCategory === cat
+              className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all border shadow-sm ${activeCategory === cat
                   ? "bg-primary text-white border-primary shadow-md scale-105"
                   : "glass-button text-stone-700 border-white/80 hover:border-primary hover:text-primary"
-              }`}
+                }`}
             >
               {cat} {cat === "All" && `(${products.length})`}
             </button>

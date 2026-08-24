@@ -89,11 +89,10 @@ export default function ProductCard({ product }) {
             toggleWishlist(product);
           }}
           aria-label={isFav ? "Remove from wishlist" : "Add to wishlist"}
-          className={`absolute top-3.5 right-3.5 w-10 h-10 rounded-full backdrop-blur-md border flex items-center justify-center transition-all z-10 shadow-sm ${
-            isFav
+          className={`absolute top-3.5 right-3.5 w-10 h-10 rounded-full backdrop-blur-md border flex items-center justify-center transition-all z-10 shadow-sm ${isFav
               ? "bg-pink-500 text-white border-pink-400 shadow-md scale-105"
               : "bg-white/70 border-white/80 text-on-surface-variant hover:text-pink-500 hover:bg-white hover:scale-105"
-          }`}
+            }`}
         >
           <span className="material-symbols-outlined text-xl">
             {isFav ? "favorite" : "favorite_border"}
@@ -118,9 +117,8 @@ export default function ProductCard({ product }) {
                   e.preventDefault();
                   setActiveImgIndex(idx);
                 }}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  activeImgIndex === idx ? "bg-white w-4" : "bg-white/50 hover:bg-white/80"
-                }`}
+                className={`w-2 h-2 rounded-full transition-all ${activeImgIndex === idx ? "bg-white w-4" : "bg-white/50 hover:bg-white/80"
+                  }`}
                 title={`Image ${idx + 1}`}
               />
             ))}
@@ -178,11 +176,11 @@ export default function ProductCard({ product }) {
           <div className="flex items-baseline justify-between">
             <div className="flex items-baseline gap-2">
               <span className="font-headline text-xl font-extrabold text-primary tracking-tight">
-                ${product.price.toFixed(2)}
+                ₹{product.price.toLocaleString("en-IN")}
               </span>
               {product.originalPrice && product.originalPrice > product.price && (
                 <span className="text-xs text-stone-400 line-through font-medium">
-                  ${product.originalPrice.toFixed(2)}
+                  ₹{product.originalPrice.toLocaleString("en-IN")}
                 </span>
               )}
             </div>
@@ -207,7 +205,7 @@ export default function ProductCard({ product }) {
                   {inCartQty} in Bag
                 </span>
                 <span className="text-[10px] text-stone-500 font-medium">
-                  ${(product.price * inCartQty).toFixed(2)}
+                  ₹{(product.price * inCartQty).toLocaleString("en-IN")}
                 </span>
               </div>
 

@@ -98,6 +98,7 @@ export function VoiceProvider({ children }) {
   const voiceOverlayOpenRef = useRef(voiceOverlayOpen);
   const activeUtteranceRef = useRef(null);
   const speechTimeoutRef = useRef(null);
+  const currentRequestIdRef = useRef(0);
 
   useEffect(() => {
     voiceOverlayOpenRef.current = voiceOverlayOpen;
@@ -395,6 +396,8 @@ export function VoiceProvider({ children }) {
   const processVoiceCommand = useCallback(async (rawCommand, langOverride) => {
     if (!rawCommand || !rawCommand.trim() || isProcessingRef.current) return;
 
+    const requestId = ++currentRequestIdRef.current;
+
     // Auto-detect language dynamically from the speech input
     let detectedLang = langOverride || detectLanguage(rawCommand);
     if (detectedLang !== currentLang) {
@@ -411,6 +414,8 @@ export function VoiceProvider({ children }) {
     addMessage("user", rawCommand);
 
     const respond = (replyText, targetLang, willNavigate = false) => {
+      if (requestId !== currentRequestIdRef.current || !voiceOverlayOpenRef.current) return;
+
       const finalLang = targetLang || detectedLang;
       setAssistantResponse(replyText);
       addMessage("assistant", replyText);
@@ -429,12 +434,12 @@ export function VoiceProvider({ children }) {
 
     const orderSummary = {
       cartCount,
-      subtotal: `$${(cartSubtotal || 0).toFixed(2)}`,
+      subtotal: `₹${(cartSubtotal || 0).toLocaleString("en-IN")}`,
       appliedCoupon: appliedCoupon ? `${appliedCoupon.code} (${appliedCoupon.label})` : "None",
-      discountAmount: `$${(discountAmount || 0).toFixed(2)}`,
-      shippingFee: shippingFee === 0 ? "FREE ($0.00)" : `$${(shippingFee || 7.99).toFixed(2)}`,
-      estimatedTax: `$${(estimatedTax || 0).toFixed(2)} (8.25%)`,
-      totalAmount: `$${(cartTotal || 0).toFixed(2)}`,
+      discountAmount: `₹${(discountAmount || 0).toLocaleString("en-IN")}`,
+      shippingFee: shippingFee === 0 ? "FREE (₹0)" : `₹${(shippingFee || 99).toLocaleString("en-IN")}`,
+      estimatedTax: `₹${(estimatedTax || 0).toLocaleString("en-IN")} (8.25%)`,
+      totalAmount: `₹${(cartTotal || 0).toLocaleString("en-IN")}`,
     };
 
     try {
@@ -442,6 +447,20 @@ export function VoiceProvider({ children }) {
       let llmResult = null;
 
       // Try Groq First (Ultra-fast LPU inference)
+      if (GroqVoiceAgent.hasApiKey()) {
+        try {
+          llmResult = await GroqVoiceAgent.processCommand(rawCommand, detectedLang, cart, messages, orderSummary);
+        } catch (groqErr) {
+          console.warn("Groq agent error, trying Gemini fallback:", groqErr);
+        }
+      }
+
+      // If user closed modal or issued new command while waiting for Groq/Gemini LLM
+      if (requestId !== currentRequestIdRef.current || !voiceOverlayOpenRef.current) {
+        isProcessingRef.current = false;
+        setIsProcessing(false);
+        return;
+      }
       if (GroqVoiceAgent.hasApiKey()) {
         try {
           llmResult = await GroqVoiceAgent.processCommand(rawCommand, detectedLang, cart, messages, orderSummary);
@@ -627,8 +646,8 @@ export function VoiceProvider({ children }) {
       ) {
         const isHindi = lang.startsWith("hi") || lower.includes("kitna") || lower.includes("rashi");
         const msg = isHindi
-          ? `आपका सबटोटल $${(cartSubtotal || 0).toFixed(2)} है, डिलीवरी शुल्क ${shippingFee === 0 ? "मुफ्त" : `$${(shippingFee || 7.99).toFixed(2)}`} है और टैक्स $${(estimatedTax || 0).toFixed(2)} है। कुल राशि $${(cartTotal || 0).toFixed(2)} है।`
-          : `Your bag subtotal is $${(cartSubtotal || 0).toFixed(2)}, eco delivery is ${shippingFee === 0 ? "FREE" : `$${(shippingFee || 7.99).toFixed(2)}`}, and estimated tax is $${(estimatedTax || 0).toFixed(2)}, making your total amount $${(cartTotal || 0).toFixed(2)}.`;
+          ? `आपका सबटोटल ₹${(cartSubtotal || 0).toLocaleString("en-IN")} है, डिलीवरी शुल्क ${shippingFee === 0 ? "मुफ्त" : `₹${(shippingFee || 99).toLocaleString("en-IN")}`} है और टैक्स ₹${(estimatedTax || 0).toLocaleString("en-IN")} है। कुल राशि ₹${(cartTotal || 0).toLocaleString("en-IN")} है।`
+          : `Your bag subtotal is ₹${(cartSubtotal || 0).toLocaleString("en-IN")}, eco delivery is ${shippingFee === 0 ? "FREE" : `₹${(shippingFee || 99).toLocaleString("en-IN")}`}, and estimated tax is ₹${(estimatedTax || 0).toLocaleString("en-IN")}, making your total amount ₹${(cartTotal || 0).toLocaleString("en-IN")}.`;
         respond(msg);
         setIsProcessing(false);
         return;
@@ -649,8 +668,8 @@ export function VoiceProvider({ children }) {
       ) {
         if (cart && cart.length > 0) {
           const summary = cart.map((c) => `${c.qty}× ${c.name}`).join(", ");
-          const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0).toFixed(2);
-          const reply = `You currently have ${summary} in your shopping bag, totaling $${total}.`;
+          const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0).toLocaleString("en-IN");
+          const reply = `You currently have ${summary} in your shopping bag, totaling ₹${total}.`;
           respond(reply);
         } else {
           respond("Your shopping bag is currently empty. Would you like to explore our fresh seasonal harvest?");
@@ -880,7 +899,7 @@ export function VoiceProvider({ children }) {
         if (matchedProduct) {
           addToCart(matchedProduct, qty);
           RecommendationService.logEvent(matchedProduct.name, "add", qty);
-          const msg = `Added ${qty > 1 ? `${qty}× ` : ""}${matchedProduct.name} ($${(matchedProduct.price * qty).toFixed(2)}) to your bag.`;
+          const msg = `Added ${qty > 1 ? `${qty}× ` : ""}${matchedProduct.name} (₹${(matchedProduct.price * qty).toLocaleString("en-IN")}) to your bag.`;
           respond(msg);
 
           const subs = RecommendationService.getSubstitutes(matchedProduct.name);
@@ -1121,12 +1140,41 @@ export function VoiceProvider({ children }) {
     });
   };
 
+  const closeVoiceModal = useCallback(() => {
+    // 1. Invalidate any in-flight LLM requests
+    currentRequestIdRef.current++;
+
+    // 2. Cancel active speech synthesis & clear timers immediately
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    if (speechTimeoutRef.current) {
+      clearTimeout(speechTimeoutRef.current);
+      speechTimeoutRef.current = null;
+    }
+
+    // 3. Stop speech recognition
+    stopListening();
+
+    // 4. Reset processing and speaking states
+    setIsProcessing(false);
+    isProcessingRef.current = false;
+    setIsSpeaking(false);
+
+    // 5. Reset conversation context history
+    clearHistory();
+
+    // 6. Close overlay modal
+    setVoiceOverlayOpen(false);
+  }, [clearHistory, stopListening]);
+
   return (
     <VoiceContext.Provider
       value={{
         voiceOverlayOpen,
         setVoiceOverlayOpen,
         openVoiceModal,
+        closeVoiceModal,
         isListening,
         startListening,
         stopListening,

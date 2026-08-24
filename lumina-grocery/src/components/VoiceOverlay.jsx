@@ -147,7 +147,7 @@ function WhiteUniverseShaderCanvas() {
 export default function VoiceOverlay() {
   const {
     voiceOverlayOpen,
-    setVoiceOverlayOpen,
+    closeVoiceModal,
     isListening,
     startListening,
     stopListening,
@@ -200,10 +200,7 @@ export default function VoiceOverlay() {
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/10 backdrop-blur-none p-4 sm:p-6 select-none animate-fadeIn"
-      onClick={() => {
-        stopListening();
-        setVoiceOverlayOpen(false);
-      }}
+      onClick={closeVoiceModal}
     >
       {/* Pure White Cosmic Glass Box with Morphing Orb Opening & Luminating Border featuring #843d9659 */}
       <div
@@ -345,10 +342,7 @@ export default function VoiceOverlay() {
         {/* Bottom Close Button */}
         <div className="w-full flex justify-center mt-auto pb-2 z-20 relative">
           <button
-            onClick={() => {
-              stopListening();
-              setVoiceOverlayOpen(false);
-            }}
+            onClick={closeVoiceModal}
             aria-label="Close Voice Assistant"
             className="bg-white/90 backdrop-blur-xl rounded-full w-14 h-14 flex items-center justify-center text-stone-800 hover:text-white hover:bg-rose-500 shadow-md active:scale-95 transition-all border"
             style={{ borderColor: "#843d9659" }}

@@ -114,7 +114,7 @@ export default function Cart() {
                   <span className="text-on-surface">
                     <strong className="text-primary">{item.qty}x</strong> {item.name}
                   </span>
-                  <span className="font-medium text-on-surface">${(item.price * item.qty).toFixed(2)}</span>
+                  <span className="font-medium text-on-surface">₹{(item.price * item.qty).toLocaleString("en-IN")}</span>
                 </div>
               ))}
             </div>
@@ -122,25 +122,25 @@ export default function Cart() {
             <div className="border-t border-white/40 pt-3 space-y-1.5 text-xs text-on-surface-variant">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${orderConfirmed.subtotal.toFixed(2)}</span>
+                <span>₹{orderConfirmed.subtotal.toLocaleString("en-IN")}</span>
               </div>
               {orderConfirmed.discount > 0 && (
                 <div className="flex justify-between text-emerald-600 font-medium">
                   <span>Discount</span>
-                  <span>-${orderConfirmed.discount.toFixed(2)}</span>
+                  <span>-₹{orderConfirmed.discount.toLocaleString("en-IN")}</span>
                 </div>
               )}
               <div className="flex justify-between">
                 <span>Eco Shipping</span>
-                <span>{orderConfirmed.shipping === 0 ? "FREE" : `$${orderConfirmed.shipping.toFixed(2)}`}</span>
+                <span>{orderConfirmed.shipping === 0 ? "FREE" : `₹${orderConfirmed.shipping.toLocaleString("en-IN")}`}</span>
               </div>
               <div className="flex justify-between">
                 <span>Estimated Tax</span>
-                <span>${orderConfirmed.tax.toFixed(2)}</span>
+                <span>₹{orderConfirmed.tax.toLocaleString("en-IN")}</span>
               </div>
               <div className="flex justify-between text-base font-bold text-on-surface pt-2 border-t border-white/40">
                 <span>Total Paid</span>
-                <span className="text-primary">${orderConfirmed.total.toFixed(2)}</span>
+                <span className="text-primary">₹{orderConfirmed.total.toLocaleString("en-IN")}</span>
               </div>
             </div>
           </div>
@@ -253,7 +253,7 @@ export default function Cart() {
                     </h3>
                   </Link>
                   <p className="text-xs text-on-surface-variant">
-                    ${item.price.toFixed(2)} / {item.unit}
+                    ₹{item.price.toLocaleString("en-IN")} / {item.unit}
                   </p>
                 </div>
               </div>
@@ -278,7 +278,7 @@ export default function Cart() {
 
                 <div className="text-right min-w-[70px]">
                   <p className="font-headline font-bold text-lg text-primary">
-                    ${(item.price * item.qty).toFixed(2)}
+                    ₹{(item.price * item.qty).toLocaleString("en-IN")}
                   </p>
                 </div>
 
@@ -352,34 +352,34 @@ export default function Cart() {
             <div className="space-y-3 text-sm text-on-surface-variant border-t border-white/40 pt-4">
               <div className="flex justify-between">
                 <span>Bag Subtotal</span>
-                <span className="font-medium text-on-surface">${cartSubtotal.toFixed(2)}</span>
+                <span className="font-medium text-on-surface">₹{cartSubtotal.toLocaleString("en-IN")}</span>
               </div>
 
               {discountAmount > 0 && (
                 <div className="flex justify-between text-emerald-600 font-medium">
                   <span>Special Savings</span>
-                  <span>-${discountAmount.toFixed(2)}</span>
+                  <span>-₹{discountAmount.toLocaleString("en-IN")}</span>
                 </div>
               )}
 
               <div className="flex justify-between items-center">
                 <span className="flex items-center gap-1">
                   Eco Delivery
-                  {cartSubtotal > 75 && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold">FREE OVER $75</span>}
+                  {cartSubtotal > 1000 && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold">FREE OVER ₹1,000</span>}
                 </span>
                 <span className="font-medium text-on-surface">
-                  {shippingFee === 0 ? "FREE" : `$${shippingFee.toFixed(2)}`}
+                  {shippingFee === 0 ? "FREE" : `₹${shippingFee.toLocaleString("en-IN")}`}
                 </span>
               </div>
 
               <div className="flex justify-between">
                 <span>Estimated Sales Tax (8.25%)</span>
-                <span className="font-medium text-on-surface">${estimatedTax.toFixed(2)}</span>
+                <span className="font-medium text-on-surface">₹{estimatedTax.toLocaleString("en-IN")}</span>
               </div>
 
               <div className="border-t border-white/60 pt-4 flex justify-between items-baseline text-on-surface">
                 <span className="font-headline font-bold text-lg">Total Amount</span>
-                <span className="font-headline font-extrabold text-2xl text-primary">${cartTotal.toFixed(2)}</span>
+                <span className="font-headline font-extrabold text-2xl text-primary">₹{cartTotal.toLocaleString("en-IN")}</span>
               </div>
             </div>
 
@@ -497,9 +497,8 @@ export default function Cart() {
                   ].map((slot) => (
                     <label
                       key={slot}
-                      className={`glass-panel p-4 rounded-xl flex items-center gap-3 cursor-pointer border transition-all ${
-                        formData.deliverySlot === slot ? "border-primary bg-primary/10" : "border-white/60 hover:bg-white/60"
-                      }`}
+                      className={`glass-panel p-4 rounded-xl flex items-center gap-3 cursor-pointer border transition-all ${formData.deliverySlot === slot ? "border-primary bg-primary/10" : "border-white/60 hover:bg-white/60"
+                        }`}
                     >
                       <input
                         type="radio"
@@ -528,9 +527,8 @@ export default function Cart() {
                         type="button"
                         key={p.id}
                         onClick={() => setFormData({ ...formData, paymentMethod: p.id })}
-                        className={`glass-panel p-3 rounded-xl flex flex-col items-center gap-1 border transition-all ${
-                          formData.paymentMethod === p.id ? "border-primary bg-primary/15" : "border-white/60"
-                        }`}
+                        className={`glass-panel p-3 rounded-xl flex flex-col items-center gap-1 border transition-all ${formData.paymentMethod === p.id ? "border-primary bg-primary/15" : "border-white/60"
+                          }`}
                       >
                         <span className="material-symbols-outlined text-2xl text-primary">{p.icon}</span>
                         <span className="text-xs font-semibold text-on-surface">{p.label}</span>
@@ -541,7 +539,7 @@ export default function Cart() {
                   <div className="glass-panel p-4 rounded-xl border border-white/60 space-y-2 text-xs text-on-surface-variant">
                     <div className="flex justify-between text-sm font-bold text-on-surface">
                       <span>Total Due</span>
-                      <span className="text-primary">${cartTotal.toFixed(2)}</span>
+                      <span className="text-primary">₹{cartTotal.toLocaleString("en-IN")}</span>
                     </div>
                     <p>Delivering to: <strong className="text-on-surface">{formData.address}, {formData.city}</strong></p>
                     <p>Time window: <strong className="text-on-surface">{formData.deliverySlot}</strong></p>
@@ -565,7 +563,7 @@ export default function Cart() {
                   type="submit"
                   className="bg-primary text-on-primary font-label text-sm font-semibold px-8 py-3 rounded-full hover:bg-opacity-90 transition-all shadow-lg flex items-center gap-2"
                 >
-                  {checkoutStep === 3 ? `Place Order ($${cartTotal.toFixed(2)})` : "Continue"}
+                  {checkoutStep === 3 ? `Place Order (₹${cartTotal.toLocaleString("en-IN")})` : "Continue"}
                   <span className="material-symbols-outlined text-base">arrow_forward</span>
                 </button>
               </div>

@@ -4,7 +4,7 @@ const CartContext = createContext();
 
 const COUPONS = {
   LUMINA20: { code: "LUMINA20", discountPct: 0.20, label: "20% Off Lumina Special" },
-  ORGANIC10: { code: "ORGANIC10", discountFixed: 10, label: "$10 Off Organic Essentials" },
+  ORGANIC10: { code: "ORGANIC10", discountFixed: 200, label: "₹200 Off Organic Essentials" },
   FREESHIP: { code: "FREESHIP", freeShipping: true, label: "Free Express Shipping" },
 };
 
@@ -135,7 +135,7 @@ export function CartProvider({ children }) {
   }
   discountAmount = Number(discountAmount.toFixed(2));
 
-  const standardShipping = cartSubtotal > 75 || appliedCoupon?.freeShipping || cartSubtotal === 0 ? 0 : 7.99;
+  const standardShipping = cartSubtotal > 1000 || appliedCoupon?.freeShipping || cartSubtotal === 0 ? 0 : 99;
   const estimatedTax = Number(((cartSubtotal - discountAmount) * 0.0825).toFixed(2));
   const finalTotal = Math.max(0, Number((cartSubtotal - discountAmount + standardShipping + estimatedTax).toFixed(2)));
 
