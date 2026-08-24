@@ -40,22 +40,12 @@
   - *Example*: *"Add 2 Alphonso Mangoes, apply coupon LUMINA20, and open my cart."*
   - *Executes*: `add_to_cart` $\rightarrow$ `apply_coupon` $\rightarrow$ `navigate(/cart)`.
 
-### 4. White Glassmorphism & WebGL Cosmic Shader UI
-- **White Universe Canvas (`WhiteUniverseShaderCanvas`)**: Real-time GLSL simplex noise fragment shader rendering swirling charcoal universe waves and silver stardust inside [`VoiceOverlay.jsx`](./lumina-grocery/src/components/VoiceOverlay.jsx).
-- **0 Blur Outer Perimeter**: Backdrop blur outside the modal perimeter is set to `0` (`backdrop-blur-none bg-black/10`), keeping the underlying store page 100% visible.
-- **Illuminating Neon Glow**: Glowing outer border animation styled with translucent royal violet accents (`#843d9659` & `#843D96`).
-- **Single Context Card**: Top glass card displays strictly the **last 1 user query** and **last 1 assistant response** to eliminate screen clutter.
-
-### 5. Indian Rupee (₹) Financial Architecture
-- **50+ Heirloom Products**: All items priced in Indian Rupees (`₹`), with dynamic price formatting using `toLocaleString("en-IN")`.
-- **Cart & Tax Breakdown**: Real-time 8.25% tax estimation, eco delivery fee (₹99 or FREE on orders over ₹1,000), promo discounts (₹200 OFF with `ORGANIC10`, 20% OFF with `LUMINA20`), and printable receipt generation.
-
-### 6. Neural Predictive Recommendation Engine
+### 4. Neural Predictive Recommendation Engine
 - **Co-Occurrence Pairing**: Real-time local session pattern learning ("Frequently Paired with Your Basket").
 - **Restock Prediction**: Cycle predictive AI estimating item replenishment schedules based on purchasing intervals ([`recommendationEngine.js`](./lumina-grocery/src/services/recommendationEngine.js)).
 - **Seasonal Sanctuary**: Curated harvest spotlights for Spring, Summer, Autumn, Winter, Monsoon, and Festive seasons.
 
-### 7. Reliability, GC Safety & Request Abort Control
+### 5. Reliability, GC Safety & Request Abort Control
 - **Chromium SpeechSynthesis GC Prevention**: Stores active `SpeechSynthesisUtterance` in a persistent React ref (`activeUtteranceRef`) to prevent Chrome garbage-collection speech drops mid-sentence.
 - **Safety Speech Watchdog Timer**: Dynamic fallback timer (`Math.max(2500, wordCount * 450 + 1000)`) guarantees speech completion callbacks fire even if browser events fail.
 - **In-Flight Request Abort Control**: Incrementing request IDs (`currentRequestIdRef`) ensure closing the modal immediately discards any running LLM API task and stops audio output.
