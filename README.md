@@ -30,10 +30,10 @@
 - **Continuous Route Listening**: Mounted at the application root ([`VoiceContext.jsx`](./lumina-grocery/src/context/VoiceContext.jsx)), listening continuously for wake phrases (`"Hello Lumina"`, `"Hey Lumina"`, `"Hi Lumina"`, `"हे लुमिना"`) on every route (`/`, `/search`, `/product/:id`, `/cart`, `/wishlist`).
 - **Web Audio API Chime**: Triggers a 3-tone ascending luxury harmonic chime ($C_5 \rightarrow E_5 \rightarrow G_5$) upon wake activation without requiring third-party audio assets.
 
-### 2. Dual-Tier LLM Agent Architecture (Groq LPU + Gemini 2.5 Flash)
-- **Ultra-Fast Groq LPUs**: Primary inference engine using `llama-3.3-70b-versatile` / `llama-3.1-8b-instant` for sub-200ms intent classification and response generation.
-- **Google Gemini 2.5 Flash Fallback**: Seamless fallback if Groq rate limits are hit or key is missing.
-- **Offline Rule Engine**: Local regex fallback guarantees zero downtime even if API keys are offline or unconfigured.
+### 2. Multi-Tier AI Agent & Fallback Architecture
+- **Tier 1: Groq LPUs (`llama-3.3-70b-versatile` / `llama-3.1-8b-instant`)**: Primary ultra-fast inference engine delivering sub-200ms intent classification, language auto-detection, and structured tool calls ([`groqAgent.js`](./lumina-grocery/src/services/groqAgent.js)).
+- **Tier 2: Google Gemini 2.5 Flash (`gemini-2.5-flash`)**: High-capacity secondary LLM fallback engine. Automatically catches API rate limits (HTTP 429), quota exhaustion, or network timeout on Tier 1 and seamlessly processes the voice request without interrupting the user ([`geminiAgent.js`](./lumina-grocery/src/services/geminiAgent.js)).
+- **Tier 3: Local Offline Rule Engine**: Deterministic client-side natural language parser powered by intelligent regex matching. Guarantees 100% offline functionality for cart modifications, search queries, navigation, and order total inquiries even if all cloud LLM APIs are offline or unconfigured.
 
 ### 3. Multi-Task Action Queue Execution
 - Parses complex multi-intent utterances into sequential MCP tool calls executed in series:
