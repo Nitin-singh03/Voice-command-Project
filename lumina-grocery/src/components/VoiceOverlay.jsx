@@ -1,30 +1,148 @@
 import { useState, useRef, useEffect } from "react";
 import { useVoice } from "../context/VoiceContext";
-import { GeminiVoiceAgent } from "../services/geminiAgent";
 
-const CHIPS_BY_LANG = {
-  "en-US": [
-    { label: '"Am I running low on bread?"', cmd: "Am I running low on bread?" },
-    { label: '"What do I need to reorder?"', cmd: "What do I need to reorder?" },
-    { label: '"Add 2 Alphonso Mangoes"', cmd: "Add 2 Royal Alphonso Mangoes" },
-    { label: '"Show summer fruits"', cmd: "Show summer fruits" },
-    { label: '"Add Sourdough Boule"', cmd: "Add Artisanal Sourdough Boule" },
-    { label: '"Add French Truffle Butter"', cmd: "Add French Black Truffle Cultured Butter" },
-    { label: '"Find items under $10"', cmd: "Find items under 10 dollars" },
-    { label: '"Apply coupon LUMINA20"', cmd: "Apply coupon LUMINA20" },
-    { label: '"Go to cart"', cmd: "Go to cart" },
-  ],
-  "hi-IN": [
-    { label: '"2 आम कार्ट में जोड़ो"', cmd: "2 Royal Alphonso Mangoes जोड़ो" },
-    { label: '"सोरडो ब्रेड जोड़ो"', cmd: "Artisanal Sourdough Boule जोड़ो" },
-    { label: '"क्या ब्रेड खत्म हो रही है?"', cmd: "Am I running low on bread?" },
-    { label: '"मसाला चाय जोड़ो"', cmd: "Monsoon Herbal Spiced Chai Blend जोड़ो" },
-    { label: '"ताज़ा फल दिखाओ"', cmd: "Show fruits" },
-    { label: '"10 डॉलर से कम का सामान खोजो"', cmd: "items under 10 dollars" },
-    { label: '"कूपन LUMINA20 लगाओ"', cmd: "Apply coupon LUMINA20" },
-    { label: '"कार्ट खोलो"', cmd: "कार्ट खोलो" },
-  ],
-};
+function WhiteUniverseShaderCanvas() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    let animId;
+    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if (!gl) return;
+
+    const vs = `
+      attribute vec2 a_position;
+      varying vec2 v_texCoord;
+      void main() {
+        v_texCoord = a_position * 0.5 + 0.5;
+        gl_Position = vec4(a_position, 0.0, 1.0);
+      }
+    `;
+
+    const fs = `
+      precision highp float;
+      uniform float u_time;
+      uniform vec2 u_resolution;
+      uniform vec2 u_mouse;
+      varying vec2 v_texCoord;
+
+      vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+      vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+      vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+
+      float snoise(vec2 v) {
+        const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+        vec2 i  = floor(v + dot(v, C.yy) );
+        vec2 x0 = v -   i + dot(i, C.xx);
+        vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+        vec4 x12 = x0.xyxy + C.xxzz;
+        x12.xy -= i1;
+        i = mod289(i);
+        vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 ));
+        vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+        m = m*m; m = m*m;
+        vec3 x = 2.0 * fract(p * C.www) - 1.0;
+        vec3 g = (x - floor(x + 0.5)) * vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw));
+        return 130.0 * dot(m, g);
+      }
+
+      float fbm(vec2 p) {
+        float f = 0.0;
+        float w = 0.5;
+        for (int i = 0; i < 5; i++) {
+          f += w * snoise(p);
+          p *= 2.02;
+          w *= 0.5;
+        }
+        return f;
+      }
+
+      void main() {
+        vec2 uv = (v_texCoord - 0.5) * vec2(u_resolution.x / u_resolution.y, 1.0);
+        float t = u_time * 0.22;
+
+        // Continuous Swirling Cosmic Vortex / Universe Movement
+        float r = length(uv);
+        float a = atan(uv.y, uv.x) + t * 0.25;
+        vec2 st = vec2(r * cos(a), r * sin(a));
+
+        float n = fbm(st * 3.0 + vec2(t * 0.15, t * 0.1));
+        float particles = pow(clamp(snoise(v_texCoord * 35.0 + t * 0.4), 0.0, 1.0), 10.0) * 1.8;
+
+        // White Light Cosmic Palette (Pure White Background + Dark Charcoal Cosmic Waves & Silver Stardust)
+        vec3 pureWhite = vec3(0.99, 0.99, 1.0);
+        vec3 cosmicCharcoal = vec3(0.15, 0.18, 0.22);
+        vec3 stardustSilver = vec3(0.52, 0.24, 0.59); // Soft #843D96 tint
+
+        vec3 cosmicCol = mix(pureWhite, cosmicCharcoal, clamp(n * 0.30, 0.0, 1.0));
+        cosmicCol = mix(cosmicCol, stardustSilver, clamp(particles * 0.7, 0.0, 1.0));
+
+        gl_FragColor = vec4(cosmicCol, 0.65);
+      }
+    `;
+
+    function compileShader(type, source) {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      return shader;
+    }
+
+    const program = gl.createProgram();
+    gl.attachShader(program, compileShader(gl.VERTEX_SHADER, vs));
+    gl.attachShader(program, compileShader(gl.FRAGMENT_SHADER, fs));
+    gl.linkProgram(program);
+    gl.useProgram(program);
+
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+
+    const pos = gl.getAttribLocation(program, "a_position");
+    gl.enableVertexAttribArray(pos);
+    gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+
+    const uTime = gl.getUniformLocation(program, "u_time");
+    const uRes = gl.getUniformLocation(program, "u_resolution");
+    const uMouse = gl.getUniformLocation(program, "u_mouse");
+
+    const resize = () => {
+      if (!canvas || !canvas.parentElement) return;
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+    const handleMouseMove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = rect.height - (e.clientY - rect.top);
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+
+    const render = (time) => {
+      if (uTime) gl.uniform1f(uTime, time * 0.001);
+      if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+      if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      animId = requestAnimationFrame(render);
+    };
+    animId = requestAnimationFrame(render);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none rounded-[inherit]" />;
+}
 
 export default function VoiceOverlay() {
   const {
@@ -35,101 +153,84 @@ export default function VoiceOverlay() {
     stopListening,
     transcript,
     interimTranscript,
-    assistantResponse,
     isSpeaking,
     isProcessing,
-    supported,
-    voiceMuted,
-    setVoiceMuted,
+    messages,
     currentLang,
     setCurrentLang,
-    processVoiceCommand,
-    messages,
-    clearHistory,
+    voiceMuted,
+    setVoiceMuted,
   } = useVoice();
 
-  const [typedInput, setTypedInput] = useState("");
-  const [showKeyModal, setShowKeyModal] = useState(false);
-  const [apiKeyInput, setApiKeyInput] = useState(GeminiVoiceAgent.getApiKey());
-  const chatScrollRef = useRef(null);
-  const hasGeminiKey = GeminiVoiceAgent.hasApiKey();
+  const [scale, setScale] = useState(1);
 
-  // Auto-scroll chat history on new message or transcript
   useEffect(() => {
-    if (chatScrollRef.current) {
-      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
-    }
-  }, [messages, interimTranscript, transcript, isProcessing]);
+    if (!voiceOverlayOpen) return;
+    let growing = true;
+    const interval = setInterval(() => {
+      setScale((prev) => {
+        if (growing) {
+          if (prev >= 1.05) growing = false;
+          return prev + 0.01;
+        } else {
+          if (prev <= 0.95) growing = true;
+          return prev - 0.01;
+        }
+      });
+    }, 60);
+    return () => clearInterval(interval);
+  }, [voiceOverlayOpen]);
 
   if (!voiceOverlayOpen) return null;
 
-  const handleManualSubmit = (e) => {
-    e.preventDefault();
-    if (typedInput.trim()) {
-      processVoiceCommand(typedInput.trim(), currentLang);
-      setTypedInput("");
+  // Extract exactly ONE previous user query & ONE previous assistant response
+  const lastUserMsg = [...messages].reverse().find((m) => m.role === "user");
+  const lastAssistantMsg = [...messages].reverse().find((m) => m.role === "assistant" && m.id !== "init-1");
+
+  const getDisplayText = () => {
+    if (isProcessing) return "Synthesizing...";
+    if (isSpeaking) return "Speaking...";
+    if (isListening) {
+      if (interimTranscript || transcript) return interimTranscript || transcript;
+      return "Listening...";
     }
-  };
-
-  const handleChipClick = (cmd) => {
-    processVoiceCommand(cmd, currentLang);
-  };
-
-  const handleSaveApiKey = (e) => {
-    e.preventDefault();
-    GeminiVoiceAgent.setApiKey(apiKeyInput);
-    setShowKeyModal(false);
-  };
-
-  const getActiveChips = () => {
-    const data = CHIPS_BY_LANG[currentLang];
-    if (Array.isArray(data)) return data;
-    return CHIPS_BY_LANG["en-US"];
+    return "Say 'Hello Lumina'...";
   };
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-md p-3 sm:p-4 animate-fadeIn"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/10 backdrop-blur-none p-4 sm:p-6 select-none animate-fadeIn"
       onClick={() => {
         stopListening();
         setVoiceOverlayOpen(false);
       }}
     >
+      {/* Pure White Cosmic Glass Box with Morphing Orb Opening & Luminating Border featuring #843d9659 */}
       <div
-        className="glass-modal p-5 sm:p-7 rounded-3xl flex flex-col items-center ambient-shadow max-w-xl w-full relative border border-white/80 shadow-2xl bg-white/95 max-h-[92vh] overflow-hidden"
+        className="relative w-full max-w-xl min-h-[500px] rounded-[2.5rem] p-6 sm:p-8 flex flex-col justify-between items-center bg-white/90 backdrop-blur-2xl border border-white/95 shadow-[0_20px_70px_rgba(132,61,150,0.18)] animate-[smoothMorphOrb_0.6s_cubic-bezier(0.16,1,0.3,1)_forwards] overflow-hidden text-stone-900 group will-change-transform"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top Controls: Model Badge, Lang & Actions */}
-        <div className="w-full flex justify-between items-center mb-3 pb-2.5 border-b border-stone-200/60 flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowKeyModal(!showKeyModal)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-500/10 hover:bg-purple-500/20 text-primary border border-purple-200 text-[11px] font-bold transition-all shadow-2xs"
-              title="Configure Google Gemini 2.5 Flash API"
-            >
-              <span className="material-symbols-outlined text-xs text-primary">auto_awesome</span>
-              <span>{hasGeminiKey ? "Gemini 2.5 Flash" : "Gemini AI Ready"}</span>
-              <span className="material-symbols-outlined text-[10px]">settings</span>
-            </button>
+        {/* Animated Illuminating Outer Light Border Ring with #843d9659 */}
+        <div
+          className="absolute -inset-[2px] rounded-[2.6rem] bg-gradient-to-r from-[#843D96] via-stone-400 to-[#843D96] opacity-75 blur-md animate-[borderLuminate_4s_linear_infinite] pointer-events-none -z-10"
+          style={{ borderColor: "#843d9659" }}
+        />
 
-            {messages && messages.length > 1 && (
-              <button
-                onClick={clearHistory}
-                className="text-[10px] text-stone-400 hover:text-rose-500 transition-colors flex items-center gap-0.5"
-                title="Clear conversation history"
-              >
-                <span className="material-symbols-outlined text-xs">delete_sweep</span>
-                <span>Clear</span>
-              </button>
-            )}
+        {/* Continuous Swirling White Universe Shader Canvas */}
+        <WhiteUniverseShaderCanvas />
+
+        {/* Top Controls Bar */}
+        <div className="w-full flex justify-between items-center z-30 relative pt-1">
+          <div className="flex items-center gap-2 bg-white/90 backdrop-blur-xl px-3.5 py-1.5 rounded-full border shadow-xs" style={{ borderColor: "#843d9659" }}>
+            <span className="material-symbols-outlined text-[18px] animate-pulse" style={{ color: "#843D96" }}>auto_awesome</span>
+            <span className="text-xs font-bold tracking-wider text-stone-900 uppercase">Lumina Voice AI</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Language Selector */}
+          <div className="flex items-center gap-2.5">
             <select
               value={currentLang}
               onChange={(e) => setCurrentLang(e.target.value)}
-              className="bg-white border border-stone-200 rounded-lg text-xs font-semibold px-2 py-1 text-on-surface focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
+              className="bg-white/90 backdrop-blur-xl border border-stone-200 rounded-full text-xs font-semibold px-3 py-1.5 text-stone-900 focus:outline-none focus:ring-1 focus:ring-[#843D96] shadow-xs"
             >
               <option value="en-US">English (US)</option>
               <option value="hi-IN">हिन्दी (Hindi)</option>
@@ -138,217 +239,172 @@ export default function VoiceOverlay() {
             <button
               onClick={() => setVoiceMuted(!voiceMuted)}
               title={voiceMuted ? "Unmute Voice Response" : "Mute Voice Response"}
-              className="p-1.5 rounded-full hover:bg-stone-100 text-stone-600 transition-colors"
+              className="p-2 rounded-full bg-white/90 backdrop-blur-xl border text-stone-800 hover:text-stone-950 hover:bg-white transition-all shadow-xs"
+              style={{ borderColor: "#843d9659" }}
             >
-              <span className="material-symbols-outlined text-lg">
+              <span className="material-symbols-outlined text-base">
                 {voiceMuted ? "volume_off" : "volume_up"}
               </span>
             </button>
-
-            <button
-              onClick={() => {
-                stopListening();
-                setVoiceOverlayOpen(false);
-              }}
-              className="p-1.5 rounded-full hover:bg-stone-100 text-stone-600 transition-colors"
-            >
-              <span className="material-symbols-outlined text-lg">close</span>
-            </button>
           </div>
         </div>
 
-        {/* Gemini API Key Configuration Drawer */}
-        {showKeyModal && (
-          <form onSubmit={handleSaveApiKey} className="w-full bg-purple-50/80 border border-purple-200/80 rounded-2xl p-3 mb-3 text-left animate-fadeIn flex-shrink-0">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-bold text-primary flex items-center gap-1">
-                <span className="material-symbols-outlined text-sm">key</span>
-                Google Gemini 2.5 Flash Key
-              </span>
-              <a
-                href="https://aistudio.google.com/app/apikey"
-                target="_blank"
-                rel="noreferrer"
-                className="text-[10px] text-primary underline font-medium"
-              >
-                Get Free API Key →
-              </a>
-            </div>
-            <p className="text-[10px] text-stone-600 mb-2">
-              Paste your free Google AI Studio key below for real-time conversational reasoning in Hindi and English.
-            </p>
-            <div className="flex gap-2">
-              <input
-                type="password"
-                value={apiKeyInput}
-                onChange={(e) => setApiKeyInput(e.target.value)}
-                placeholder="AIzaSy..."
-                className="glass-input text-xs py-1.5 px-3 bg-white"
-              />
-              <button
-                type="submit"
-                className="bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-full whitespace-nowrap shadow-sm hover:bg-opacity-90"
-              >
-                Save
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* 1. VISIBLE MULTI-TURN CONVERSATION CHAT STREAM */}
-        <div
-          ref={chatScrollRef}
-          className={`w-full flex-grow overflow-y-auto space-y-2.5 pr-1.5 mb-3 text-left transition-all duration-300 ${
-            messages && messages.length > 1 || isListening
-              ? "max-h-[320px] sm:max-h-[360px]"
-              : "max-h-[220px] sm:max-h-[240px]"
-          }`}
-        >
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex items-start gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              {msg.role === "assistant" && (
-                <div className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 mt-0.5 border border-primary/20">
-                  <span className="material-symbols-outlined text-sm">auto_awesome</span>
-                </div>
-              )}
-
-              <div
-                className={`p-3 rounded-2xl max-w-[82%] text-xs md:text-sm leading-relaxed shadow-xs ${
-                  msg.role === "user"
-                    ? "bg-primary text-white rounded-tr-xs ml-auto shadow-primary/15"
-                    : "bg-stone-100/90 text-stone-800 border border-stone-200/60 rounded-tl-xs"
-                }`}
-              >
-                <p className="font-medium">{msg.text}</p>
-                {msg.time && (
-                  <span
-                    className={`text-[9px] block mt-1 ${
-                      msg.role === "user" ? "text-white/70 text-right" : "text-stone-400"
-                    }`}
-                  >
-                    {msg.time}
-                  </span>
-                )}
-              </div>
-
-              {msg.role === "user" && (
-                <div className="w-7 h-7 rounded-full bg-purple-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
-                  <span className="material-symbols-outlined text-sm">person</span>
-                </div>
-              )}
-            </div>
-          ))}
-
-          {/* Live Interim Speech Bubble while speaking */}
-          {isListening && (interimTranscript || transcript) && (
-            <div className="flex items-start gap-2.5 justify-end animate-fadeIn">
-              <div className="p-3 rounded-2xl max-w-[82%] text-xs md:text-sm bg-primary/80 text-white italic rounded-tr-xs border border-white/40 shadow-sm">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-amber-200 block mb-0.5">
-                  Listening...
-                </span>
-                <p>{interimTranscript || transcript}</p>
-              </div>
-              <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center flex-shrink-0 mt-0.5 animate-pulse">
-                <span className="material-symbols-outlined text-sm">mic</span>
-              </div>
-            </div>
-          )}
-
-          {/* Premium Animated Thinking State */}
-          {isProcessing && (
-            <div className="flex items-start gap-2.5 justify-start animate-fadeIn">
-              <div className="w-7 h-7 rounded-full bg-purple-500/10 text-primary flex items-center justify-center flex-shrink-0 mt-0.5 border border-purple-200">
-                <span className="material-symbols-outlined text-sm animate-spin">progress_activity</span>
-              </div>
-              <div className="p-3 rounded-2xl bg-white/90 text-stone-700 border border-purple-100 shadow-xs flex items-center gap-2 rounded-tl-xs">
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]"></span>
-                  <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]"></span>
-                  <span className="w-2 h-2 rounded-full bg-primary animate-bounce"></span>
-                </div>
-                <span className="text-xs font-semibold text-primary">Thinking...</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* 2. Dynamic Glowing Mic Button & Audio Equalizer Bars */}
-        <div className="flex items-center justify-center gap-4 my-1 flex-shrink-0">
-          <div className="relative flex items-center justify-center">
-            {isListening && (
-              <div className="absolute w-20 h-20 rounded-full bg-primary/20 pulse-ring pointer-events-none" />
-            )}
-
-            <button
-              onClick={isListening ? stopListening : startListening}
-              className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl ${
-                isListening
-                  ? "bg-gradient-to-tr from-primary to-purple-600 text-white scale-108 shadow-primary/40 ring-4 ring-primary/30"
-                  : "glass-btn-primary text-white hover:scale-105"
-              }`}
-            >
-              <span className="material-symbols-outlined text-2xl">
-                {isListening ? "mic" : "mic_none"}
-              </span>
-            </button>
-          </div>
-
-          {/* Mini Equalizer */}
-          <div className="flex items-end justify-center h-6">
-            <div className={`voice-bar ${!isListening && !isSpeaking ? "opacity-30 !h-1.5 animate-none" : ""}`} />
-            <div className={`voice-bar ${!isListening && !isSpeaking ? "opacity-30 !h-3.5 animate-none" : ""}`} />
-            <div className={`voice-bar ${!isListening && !isSpeaking ? "opacity-30 !h-5 animate-none" : ""}`} />
-            <div className={`voice-bar ${!isListening && !isSpeaking ? "opacity-30 !h-3.5 animate-none" : ""}`} />
-            <div className={`voice-bar ${!isListening && !isSpeaking ? "opacity-30 !h-1.5 animate-none" : ""}`} />
-          </div>
-        </div>
-
-        {!supported && (
-          <div className="my-1.5 text-[11px] text-amber-800 bg-amber-50 px-3 py-1 rounded-lg border border-amber-200">
-            Microphone speech API not supported. Use quick chips or type below!
-          </div>
-        )}
-
-        {/* 3. Intelligent Suggestion Chips - Only shown on initial screen before user starts talking */}
-        {!isListening && messages && messages.length <= 1 && (
-          <div className="w-full text-left mt-2 flex-shrink-0 animate-fadeIn">
-            <p className="text-[10px] uppercase font-bold tracking-wider text-stone-400 mb-1.5 px-0.5">
-              Suggested commands:
-            </p>
-            <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
-              {getActiveChips().map((item, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleChipClick(item.cmd)}
-                  className="glass-button text-[11px] py-1 px-2.5 rounded-full text-stone-700 hover:text-primary hover:border-primary/50 transition-all text-left bg-white/80"
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 4. Manual Fallback Form Input */}
-        <form onSubmit={handleManualSubmit} className="w-full mt-2.5 flex gap-2 flex-shrink-0">
-          <input
-            type="text"
-            value={typedInput}
-            onChange={(e) => setTypedInput(e.target.value)}
-            placeholder='Ask or command in English or हिन्दी...'
-            className="glass-input text-xs py-2 px-3.5 rounded-full flex-grow text-on-surface bg-white/90"
-          />
-          <button
-            type="submit"
-            className="glass-btn-primary px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1 shadow-sm"
+        {/* Top Card: Displays EXACTLY ONE Previous User Query & Result */}
+        <div className="w-full flex justify-center pt-3 z-20 relative">
+          <div
+            className="bg-white/95 backdrop-blur-2xl rounded-2xl p-4 w-full max-w-md flex flex-col gap-2 relative overflow-hidden transition-all duration-300 shadow-md border"
+            style={{ borderColor: "#843d9659" }}
           >
-            <span className="material-symbols-outlined text-sm">send</span>
+            {/* User Query Row */}
+            <div className="flex items-center gap-2.5">
+              <span className="material-symbols-outlined text-stone-500 text-[18px]">account_circle</span>
+              <p className="text-xs sm:text-sm text-stone-900 font-semibold truncate">
+                {lastUserMsg ? lastUserMsg.text : "Say 'Hello Lumina' or state your command..."}
+              </p>
+            </div>
+
+            {/* Assistant Response Row */}
+            <div className="flex items-start gap-2.5 pt-2 border-t border-stone-200/80">
+              <span className="material-symbols-outlined text-[18px] mt-[1px]" style={{ color: "#843D96" }}>auto_awesome</span>
+              <p className="text-xs sm:text-sm text-stone-800 font-medium line-clamp-3 leading-relaxed">
+                {lastAssistantMsg
+                  ? lastAssistantMsg.text
+                  : "I am ready for your next grocery command!"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Center Cosmic AI Status Title */}
+        <div className="flex-grow flex flex-col items-center justify-center relative z-20 my-auto">
+          <div
+            className="relative flex items-center justify-center transition-transform duration-300 ease-out"
+            style={{ transform: `scale(${scale})` }}
+          >
+            <div
+              className="absolute rounded-full blur-3xl animate-pulse pointer-events-none"
+              style={{ width: "220px", height: "220px", backgroundColor: "#843d9659" }}
+            />
+            <div
+              className="absolute rounded-full bg-stone-300/30 blur-2xl animate-pulse pointer-events-none"
+              style={{ width: "160px", height: "160px", animationDelay: "0.5s" }}
+            />
+
+            <h1 className="text-2xl sm:text-4xl text-stone-950 font-bold tracking-wide text-center relative z-20 drop-shadow-[0_2px_10px_rgba(132,61,150,0.25)] px-4 max-w-md">
+              {getDisplayText()}
+            </h1>
+          </div>
+
+          {/* Sound Wave Bars with #843D96 accents */}
+          <div className="mt-8 flex items-center justify-center gap-2 h-9">
+            <div
+              className={`w-1.5 bg-stone-900 rounded-full transition-all duration-300 ${
+                isListening || isSpeaking || isProcessing ? "animate-[wave_1.2s_ease-in-out_infinite]" : "h-2 opacity-40"
+              }`}
+              style={{ height: "14px", animationDelay: "0.1s" }}
+            />
+            <div
+              className={`w-1.5 rounded-full transition-all duration-300 ${
+                isListening || isSpeaking || isProcessing ? "animate-[wave_1.2s_ease-in-out_infinite]" : "h-4 opacity-40"
+              }`}
+              style={{ height: "28px", animationDelay: "0.2s", backgroundColor: "#843D96" }}
+            />
+            <div
+              className={`w-1.5 bg-stone-500 rounded-full transition-all duration-300 ${
+                isListening || isSpeaking || isProcessing ? "animate-[wave_1.2s_ease-in-out_infinite]" : "h-3 opacity-40"
+              }`}
+              style={{ height: "20px", animationDelay: "0.3s" }}
+            />
+            <div
+              className={`w-1.5 bg-stone-900 rounded-full transition-all duration-300 ${
+                isListening || isSpeaking || isProcessing ? "animate-[wave_1.2s_ease-in-out_infinite]" : "h-6 opacity-40"
+              }`}
+              style={{ height: "36px", animationDelay: "0.4s" }}
+            />
+            <div
+              className={`w-1.5 rounded-full transition-all duration-300 ${
+                isListening || isSpeaking || isProcessing ? "animate-[wave_1.2s_ease-in-out_infinite]" : "h-3 opacity-40"
+              }`}
+              style={{ height: "22px", animationDelay: "0.5s", backgroundColor: "#843D96" }}
+            />
+            <div
+              className={`w-1.5 bg-stone-900 rounded-full transition-all duration-300 ${
+                isListening || isSpeaking || isProcessing ? "animate-[wave_1.2s_ease-in-out_infinite]" : "h-5 opacity-40"
+              }`}
+              style={{ height: "30px", animationDelay: "0.6s" }}
+            />
+            <div
+              className={`w-1.5 bg-stone-500 rounded-full transition-all duration-300 ${
+                isListening || isSpeaking || isProcessing ? "animate-[wave_1.2s_ease-in-out_infinite]" : "h-2 opacity-40"
+              }`}
+              style={{ height: "16px", animationDelay: "0.7s" }}
+            />
+          </div>
+        </div>
+
+        {/* Bottom Close Button */}
+        <div className="w-full flex justify-center mt-auto pb-2 z-20 relative">
+          <button
+            onClick={() => {
+              stopListening();
+              setVoiceOverlayOpen(false);
+            }}
+            aria-label="Close Voice Assistant"
+            className="bg-white/90 backdrop-blur-xl rounded-full w-14 h-14 flex items-center justify-center text-stone-800 hover:text-white hover:bg-rose-500 shadow-md active:scale-95 transition-all border"
+            style={{ borderColor: "#843d9659" }}
+          >
+            <span className="material-symbols-outlined text-[28px] font-light">close</span>
           </button>
-        </form>
+        </div>
       </div>
+
+      <style>{`
+        @keyframes smoothMorphOrb {
+          0% {
+            width: 70px;
+            height: 70px;
+            min-height: 70px;
+            border-radius: 9999px;
+            opacity: 0;
+            transform: scale(0.15);
+            box-shadow: 0 0 60px rgba(132, 61, 150, 0.5), 0 0 100px rgba(255, 255, 255, 0.8);
+          }
+          60% {
+            width: 340px;
+            height: 340px;
+            min-height: 340px;
+            border-radius: 9999px;
+            opacity: 0.9;
+            transform: scale(0.95);
+            box-shadow: 0 0 80px rgba(132, 61, 150, 0.35);
+          }
+          100% {
+            width: 100%;
+            max-width: 36rem;
+            min-height: 500px;
+            border-radius: 2.5rem;
+            opacity: 1;
+            transform: scale(1);
+            box-shadow: 0 20px 70px rgba(132, 61, 150, 0.18);
+          }
+        }
+
+        @keyframes borderLuminate {
+          0%, 100% {
+            opacity: 0.5;
+            filter: drop-shadow(0 0 18px rgba(132, 61, 150, 0.4));
+          }
+          50% {
+            opacity: 0.95;
+            filter: drop-shadow(0 0 32px rgba(132, 61, 150, 0.7));
+          }
+        }
+
+        @keyframes wave {
+          0%, 100% { height: 10px; opacity: 0.5; }
+          50% { height: 36px; opacity: 1; box-shadow: 0 0 12px rgba(132, 61, 150, 0.4); }
+        }
+      `}</style>
     </div>
   );
 }

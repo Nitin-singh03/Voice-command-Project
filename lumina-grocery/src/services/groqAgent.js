@@ -1,27 +1,26 @@
 import { products } from "../data/products";
 
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 /**
- * Gemini 2.0 Flash Agent Service for Lumina Grocery
- * Translates English, Hindi, and Hinglish voice queries into structured actions.
+ * Groq LPU Voice AI Agent for Lumina Grocery
+ * Translates English, Hindi (हिन्दी), and Hinglish voice commands into structured MCP tool calls with ultra-low latency.
  */
-export const GeminiVoiceAgent = {
+export const GroqVoiceAgent = {
   getApiKey() {
     return (
-      import.meta.env.VITE_GEMINI_API_KEY ||
-      import.meta.env.VITE_GEMINI_KEY ||
-      import.meta.env.VITE_GOOGLE_API_KEY ||
-      localStorage.getItem("lumina_gemini_api_key") ||
+      import.meta.env.VITE_GROQ_API_KEY ||
+      import.meta.env.VITE_GROQ_KEY ||
+      localStorage.getItem("lumina_groq_api_key") ||
       ""
     );
   },
 
   setApiKey(key) {
     if (key) {
-      localStorage.setItem("lumina_gemini_api_key", key.trim());
+      localStorage.setItem("lumina_groq_api_key", key.trim());
     } else {
-      localStorage.removeItem("lumina_gemini_api_key");
+      localStorage.removeItem("lumina_groq_api_key");
     }
   },
 
@@ -30,7 +29,7 @@ export const GeminiVoiceAgent = {
   },
 
   /**
-   * Process a voice or text command directly using Gemini 2.5 Flash LLM as an MCP Tool Caller
+   * Process a voice or text command directly using Groq LPUs
    * Raw user speech is passed untouched to the model.
    * @param {string} userQuery - The raw, untouched user speech or text
    * @param {string} currentLang - 'en-US' or 'hi-IN'
@@ -41,7 +40,7 @@ export const GeminiVoiceAgent = {
   async processCommand(userQuery, currentLang = "en-US", currentCart = [], conversationHistory = [], orderSummary = {}) {
     const apiKey = this.getApiKey();
     if (!apiKey) {
-      throw new Error("NO_API_KEY");
+      throw new Error("NO_GROQ_API_KEY");
     }
 
     const catalogSummary = products.map((p) => ({
@@ -58,7 +57,7 @@ export const GeminiVoiceAgent = {
     const cartSummary = currentCart.map((c) => `${c.qty}x ${c.name} ($${(c.price * c.qty).toFixed(2)})`).join(", ");
 
     const systemPrompt = `You are Lumina's Voice AI Agent & Shopping Orchestrator for a luxury organic grocery store.
-You understand English, Hindi (हिन्दी in Devanagari), and conversational Hinglish.
+You understand English, Hindi (हिन्दी in Devanagari script), and conversational Hinglish.
 You maintain full context across conversation turns.
 
 Available Product Catalog:
@@ -110,15 +109,15 @@ Return a JSON object matching this schema:
   "tool": "add_to_cart" | "remove_from_cart" | "search_catalog" | "check_restock" | "apply_coupon" | "navigate" | "clear_cart" | "general_answer",
   "detectedLang": "en-US" | "hi-IN",
   "items": [{ "name": "Exact Product Name", "qty": 1 }],
-  "searchQuery": "string or null",
+  "searchQuery": null,
   "maxPrice": null,
-  "couponCode": "string or null",
-  "route": "string or null",
+  "couponCode": null,
+  "route": null,
   "spokenResponse": "Short, natural, friendly reply in the user's spoken language"
 }
 
 Examples:
-User: "What is my total amount?" or "Show order summary"
+User: "What is my total amount?"
 Response:
 {
   "tool": "general_answer",
@@ -186,72 +185,60 @@ Response:
 {
   "tool": "general_answer",
   "spokenResponse": "Hello! Welcome to Lumina. How can I help with your organic grocery shopping today?"
-}
+}`;
 
-Return ONLY valid JSON matching this schema.`;
-
-    // Construct multi-turn contents array
-    const contents = [];
+    // Construct OpenAI-compatible messages payload
+    const messages = [{ role: "system", content: systemPrompt }];
 
     const recentHistory = (conversationHistory || []).slice(-6);
     recentHistory.forEach((msg) => {
       if (msg.role === "user" && msg.text) {
-        contents.push({ role: "user", parts: [{ text: msg.text }] });
+        messages.push({ role: "user", content: msg.text });
       } else if (msg.role === "assistant" && msg.text) {
-        contents.push({ role: "model", parts: [{ text: JSON.stringify({ spokenResponse: msg.text }) }] });
+        messages.push({ role: "assistant", content: JSON.stringify({ spokenResponse: msg.text }) });
       }
     });
 
-    // Add current turn with RAW untouched user speech
-    contents.push({
-      role: "user",
-      parts: [{ text: userQuery }],
-    });
-
-    const requestBody = {
-      contents,
-      systemInstruction: {
-        parts: [{ text: systemPrompt }],
-      },
-      generationConfig: {
-        responseMimeType: "application/json",
-        temperature: 0.1,
-      },
-    };
+    messages.push({ role: "user", content: userQuery });
 
     const candidateModels = [
-      "gemini-2.5-flash",
-      "gemini-2.5-flash-lite",
-      "gemini-flash-latest",
-      "gemini-3.6-flash",
+      "openai/gpt-oss-120b",
+      "qwen/qwen3.6-27b",
+      "openai/gpt-oss-20b",
     ];
 
     let lastError = null;
 
     for (const model of candidateModels) {
       try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-        const response = await fetch(url, {
+        const response = await fetch(GROQ_API_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(requestBody),
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            messages,
+            response_format: { type: "json_object" },
+            temperature: 0.1,
+          }),
         });
 
         if (response.ok) {
           const data = await response.json();
-          const rawJsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          const rawJsonText = data.choices?.[0]?.message?.content;
           if (rawJsonText) {
             return JSON.parse(rawJsonText);
           }
         }
 
         const errData = await response.json().catch(() => ({}));
-        const errMsg = errData.error?.message || `HTTP ${response.status}`;
+        const errMsg = errData.error?.message || `Groq HTTP ${response.status}`;
         lastError = new Error(errMsg);
 
-        // If rate limit (429), try next model in list
         if (response.status === 429 || response.status === 503) {
-          console.warn(`Model ${model} hit rate limit (${response.status}), trying next model...`);
+          console.warn(`Groq Model ${model} hit rate limit (${response.status}), trying next model...`);
           continue;
         }
 
@@ -261,6 +248,6 @@ Return ONLY valid JSON matching this schema.`;
       }
     }
 
-    throw lastError || new Error("Failed to process command with Gemini");
+    throw lastError || new Error("Failed to process command with Groq");
   },
 };
