@@ -1,16 +1,17 @@
 import { useVoice } from "../context/VoiceContext";
 
 export default function VoiceFab() {
-  const { openVoiceModal, isListening } = useVoice();
+  const { openVoiceModal, isListening, isWakeListening } = useVoice();
 
   return (
     <div className="fixed bottom-6 right-6 z-40 flex items-center group">
       <span className="mr-3 px-3.5 py-1.5 rounded-full glass-modal text-xs font-bold text-primary shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none hidden sm:inline-block border border-white/90">
-        Talk to Voice AI
+        Say &ldquo;Hello Lumina&rdquo; or click
       </span>
       <button
         onClick={openVoiceModal}
-        aria-label="Activate Voice Assistant"
+        aria-label="Activate Voice Assistant (or say Hello Lumina)"
+        title="Say 'Hello Lumina' or click to activate Voice AI"
         className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 transform group-hover:scale-110 relative ${
           isListening
             ? "bg-gradient-to-tr from-purple-600 via-primary to-pink-500 text-white pulse-glow ring-4 ring-primary/40"

@@ -69,50 +69,44 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/45" />
 
         <div className="relative z-10 w-full max-w-2xl px-4 text-center">
-          <div className="bg-white/15 backdrop-blur-2xl px-6 py-8 sm:py-10 md:px-10 rounded-3xl flex flex-col items-center text-center border border-white/40 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] relative overflow-hidden animate-hero-glow group">
+          <div className="bg-white/15 backdrop-blur-2xl px-6 py-10 sm:py-12 md:px-12 rounded-3xl flex flex-col items-center text-center border border-white/40 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] relative overflow-hidden animate-hero-glow group">
             {/* 1. Animated Holographic Light Sweep Sheen */}
             <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none animate-shine-sweep -z-0" />
 
             {/* 2. Stylus Minimalist Badge */}
-            <span className="font-label text-[11px] uppercase tracking-[0.25em] text-amber-200 font-semibold mb-3.5 bg-black/40 backdrop-blur-md px-4 py-1 rounded-full border border-white/25 shadow-xs flex items-center gap-2 relative z-10 animate-float-mini">
+            <span className="font-label text-[11px] uppercase tracking-[0.25em] text-amber-200 font-semibold mb-4 bg-black/40 backdrop-blur-md px-4 py-1 rounded-full border border-white/25 shadow-xs flex items-center gap-2 relative z-10">
               <span className="material-symbols-outlined text-xs text-amber-300 animate-spin-slow">auto_awesome</span>
-              <span>Voice-Activated Sanctuary</span>
+              <span>Lumina Luxury Grocery</span>
             </span>
 
-            {/* 3. Stylus Luxury Headline */}
-            <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl text-white tracking-tight drop-shadow-xl mb-3 relative z-10">
-              Lumina <span className="font-editorial italic font-normal text-amber-200 drop-shadow-md">Luxury Grocery</span>
-            </h1>
-
-            {/* 4. Minimal, Poetic Subtitle */}
-            <p className="font-editorial italic text-sm sm:text-lg text-white/90 max-w-md mx-auto leading-relaxed drop-shadow-sm mb-6 relative z-10">
-              Heirloom farm harvests & artisanal delicacies, ordered effortlessly by voice.
-            </p>
-
-            {/* 5. Clean Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full sm:w-auto relative z-10">
+            {/* 3. Big Center Glowing Mic Icon */}
+            <div className="my-4 relative z-10 flex items-center justify-center">
+              <div className="absolute w-32 h-32 sm:w-36 sm:h-36 rounded-full bg-primary/30 blur-2xl animate-pulse pointer-events-none" />
               <button
                 onClick={openVoiceModal}
-                className="glass-btn-primary text-white font-label text-xs sm:text-sm font-bold px-7 py-3 rounded-full shadow-[0_10px_25px_rgba(132,61,150,0.55)] hover:bg-opacity-95 transition-all flex items-center justify-center gap-2 pulse-glow hover:scale-105 border border-white/40 group/btn"
+                aria-label="Activate Voice Assistant"
+                title="Say 'Hello Lumina' or click to activate Voice AI"
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center text-white shadow-[0_0_50px_rgba(132,61,150,0.8)] transition-all duration-300 transform hover:scale-110 active:scale-95 relative group/mic glass-btn-primary border-2 border-white/80 ring-4 ring-white/20"
               >
-                {/* Mini equalizer */}
-                <div className="flex items-center gap-0.5 h-3.5">
-                  <span className="w-0.5 bg-white rounded-full h-1.5 group-hover/btn:h-3.5 animate-pulse transition-all" />
-                  <span className="w-0.5 bg-white rounded-full h-3 group-hover/btn:h-1.5 animate-pulse transition-all delay-75" />
-                  <span className="w-0.5 bg-white rounded-full h-1 group-hover/btn:h-2.5 animate-pulse transition-all delay-150" />
-                </div>
-                <span className="material-symbols-outlined text-base">mic</span>
-                <span>Shop with Voice AI</span>
+                <span className="material-symbols-outlined text-4xl sm:text-5xl group-hover/mic:scale-110 transition-transform">
+                  mic
+                </span>
+                <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-400 border-2 border-white" />
+                </span>
               </button>
-
-              <Link
-                to="/search?q=all"
-                className="bg-white/20 hover:bg-white/35 backdrop-blur-xl text-white font-label text-xs sm:text-sm font-bold px-7 py-3 rounded-full flex items-center justify-center gap-2 border border-white/40 transition-all hover:scale-105 shadow-md group/cat"
-              >
-                <span className="material-symbols-outlined text-base group-hover/cat:rotate-12 transition-transform">grid_view</span>
-                <span>Explore Catalog</span>
-              </Link>
             </div>
+
+            {/* 4. Prominent Main Instruction */}
+            <h1 className="font-serif text-2xl sm:text-4xl text-white tracking-tight drop-shadow-xl my-2 relative z-10 font-bold">
+              Say <span className="font-editorial italic text-amber-200 drop-shadow-md">&ldquo;Hello Lumina&rdquo;</span> or click
+            </h1>
+
+            {/* 5. Minimal Subtitle */}
+            <p className="font-editorial italic text-xs sm:text-base text-white/90 max-w-md mx-auto leading-relaxed drop-shadow-sm mt-1 relative z-10">
+              Heirloom farm harvests & artisanal delicacies, ordered effortlessly by voice.
+            </p>
           </div>
         </div>
       </section>
