@@ -1,4 +1,4 @@
-# Lumina Luxury Grocery — Multimodal Voice AI E-Commerce Platform
+# Lumina Luxury Grocery - Multimodal Voice AI E-Commerce Platform
 
 > **An Autonomous, Hands-Free Voice-First E-Commerce Sanctuary** powered by **Groq LPUs**, **Google Gemini 2.5 Flash**, **Web Audio API**, **WebGL GLSL Shaders**, and **Tailwind CSS**.
 
